@@ -12,3 +12,16 @@ poetry install
 python main.py
 ```
 
+## パッケージを追加したい場合
+```
+poetry add 'パッケージ名'
+```
+ ## 仮想環境への出入り
+ 入り方
+ ```
+poetry shell
+```
+出方
+```
+exit
+```
