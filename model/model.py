@@ -1,4 +1,4 @@
-from xgboost import XGBClassifier
+import xgboost as xgb
 from sklearn.metrics import (
     accuracy_score,
     f1_score,
@@ -15,7 +15,7 @@ class XGBoostClassifier:
         self.model = xgb.XGBClassifier(
             objective="multi:softmax",
             num_class=self.output_dim,
-            eval_metric=f1_micro,
+            # eval_metric=f1_micro,
             early_stopping_rounds=50
         )
 
