@@ -6,6 +6,7 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
+from .utils import f1_micro, f1_micro_lgb
 
 class XGBoostClassifier:
     def __init__(self, input_dim, output_dim, verbose) -> None:
