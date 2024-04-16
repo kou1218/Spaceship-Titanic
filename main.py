@@ -3,23 +3,32 @@ from data import TableDataFrame, v1
 
 from model import XGBoostClassifier
 
+from experiment import ExpBase
+
 from sklearn.model_selection import train_test_split
 
 def main():
-    dataframe = v1()
-    dataframe.make_columns()
+    ExpBase.run()
+
+
+if __name__ == "__main__":
+    main()
+
+# def main():
+#     dataframe = v1()
+#     dataframe.make_columns()
   
 
-    train = dataframe.train
-    test = dataframe.test
-    feature_columns = dataframe.feature_columns
-    target_column = dataframe.target_column
+#     train = dataframe.train
+#     test = dataframe.test
+#     feature_columns = dataframe.feature_columns
+#     target_column = dataframe.target_column
 
-    model = XGBoostClassifier(input_dim=6, output_dim=2, verbose=1)
+#     model = XGBoostClassifier(input_dim=6, output_dim=2, verbose=1)
 
-    df_train, df_val = train_test_split(train, test_size=0.2)
+#     df_train, df_val = train_test_split(train, test_size=0.2)
 
-    model.fit(df_train[feature_columns], df_train[target_column], eval_set=[df_val[feature_columns], df_val[target_column]])
+#     model.fit(df_train[feature_columns], df_train[target_column], eval_set=[df_val[feature_columns], df_val[target_column]])
 
 
     
