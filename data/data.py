@@ -184,7 +184,7 @@ class TabularDataFrame(object):
 
         # 欠損値処理オブジェクトを作成
         imputer_mode = SimpleImputer(strategy='most_frequent')
-        imputer_mean = SimpleIMputer(strategy='mean')
+        imputer_mean = SimpleImputer(strategy='mean')
 
         if 'HomePlanet' in df_concat:
             df_concat['HomePlanet'] = imputer_mode.fit_transform(df_concat[['HomePlanet']])[:, 0]
@@ -211,13 +211,13 @@ class TabularDataFrame(object):
             df_concat['FoodCourt'] = imputer_mean.fit_transform(df_concat[['FoodCourt']])[:, 0]
         
         if 'ShoppingMall' in df_concat:
-            df_concat['ShoppingMall'] = imputer_mean.fit_transform(df_concat[['Shoppingmall']])[:, 0]
+            df_concat['ShoppingMall'] = imputer_mean.fit_transform(df_concat[['ShoppingMall']])[:, 0]
 
         if 'Spa' in df_concat:
             df_concat['Spa'] = imputer_mean.fit_transform(df_concat[['Spa']])[:, 0]
         
         if 'VRDeck' in df_concat:
-            df_concat['VRDeck'] = imputer_mean.fit_transform(df_concat[['VRDEck']])[:, 0]    
+            df_concat['VRDeck'] = imputer_mean.fit_transform(df_concat[['VRDeck']])[:, 0]    
         
         if 'Name' in df_concat:
             ...
@@ -282,17 +282,11 @@ class V1(TabularDataFrame):
         self.categorical_columns.extend(['Cabin_deck', 'Cabin_side'])
 
 
-
-
-
-
-
         self.train = df_concat[:len(self.train)]
         self.test = df_concat[len(self.train):]
         self.test.drop(self.target_column, axis=1, inplace=True)
     
-    def fillnan(self) -> None:
-        ...
+    
 
 
 
