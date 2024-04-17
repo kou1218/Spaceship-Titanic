@@ -35,8 +35,11 @@ class XGBoostClassifier:
         y_pred = self.predict(X)
         results = {}
         results["ACC"] = accuracy_score(y, y_pred)
-        y_score = self.predict_proba(X)
-        results["AUC"] = roc_auc_score(y, y_score, multi_class="ovr")
+        # print("hika")
+        y_score = self.predict_proba(X)[:,1]
+        # print("hika")
+        results["AUC"] = roc_auc_score(y, y_score)
+        print("hika")
         results["Precision"] = precision_score(y, y_pred, average="micro", zero_division=0)
         results["Recall"] = recall_score(y, y_pred, average="micro", zero_division=0)
         results["Specificity"] = recall_score(1 - y, 1 - y_pred, average="micro", zero_division=0)

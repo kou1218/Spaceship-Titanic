@@ -26,8 +26,8 @@ def load_object(input_path: str):
 
 
 def cal_auc_score(model, data, feature_cols, label_col):
-    pred_proba = model.predict_proba(data[feature_cols])
-    auc = roc_auc_score(data[label_col].values.tolist(), pred_proba, multi_class="ovo")
+    pred_proba = model.predict_proba(data[feature_cols])[:,1]
+    auc = roc_auc_score(data[label_col].values.tolist(), pred_proba)
     return auc
 
 
