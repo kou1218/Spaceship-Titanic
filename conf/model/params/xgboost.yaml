@@ -1,0 +1,10 @@
+max_depth: 6
+n_estimators: 10000
+eta: null
+min_child_weight: null
+subsample: null
+colsample_bytree: null
+colsample_bylevel: null
+gamma: null
+alpha: null
+lambda: null
