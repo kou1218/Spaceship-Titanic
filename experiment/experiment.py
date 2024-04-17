@@ -81,6 +81,7 @@ class ExpBase:
     def run(self):
         skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=self.seed)
         y_test_pred_all = []
+        score_all = 0
         for i_fold, (train_idx, val_idx) in enumerate(skf.split(self.train, self.train[self.target_column])):
             if len(self.writer["fold"]) != 0 and self.writer["fold"][-1] >= i_fold:
                 logger.info(f"Skip {i_fold + 1} fold. Already finished.")
@@ -96,6 +97,8 @@ class ExpBase:
                 f"val/F1: {score['F1']}"
             )
 
+            score_all += score["ACC"]
+
             self.add_results(i_fold, score, time)
 
             y_test_pred_all.append(
@@ -107,6 +110,8 @@ class ExpBase:
         submit_df["Transported"] = self.label_encoder.inverse_transform(y_test_pred_all)
         print(submit_df)
         submit_df.to_csv("submit.csv", index=False)
+
+        print('score_average', score_all/self.n_splits)
 
     def get_model_config(self, *args, **kwargs):
         raise NotImplementedError()
