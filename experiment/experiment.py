@@ -114,3 +114,11 @@ class ExpBase:
     def get_x_y(self, train_data):
         x, y = train_data[self.columns], train_data[self.target_column].values.squeeze()
         return x, y
+    
+
+class ExpSimple(ExpBase):
+    def __init__(self, config):
+        super().__init__(config)
+
+    def get_model_config(self, *args, **kwargs):
+        return self.model_config
