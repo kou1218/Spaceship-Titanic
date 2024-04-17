@@ -11,6 +11,7 @@ from sklearn.preprocessing import (
     OrdinalEncoder,
     StandardScaler,
 )
+from sklearn.impute import SimpleImputer
 
 from .utils import feature_name_combiner
 
@@ -21,25 +22,24 @@ logger = logging.getLogger(__name__)
 # Modified by somaonishi and shoyameguro.
 class TabularDataFrame(object):
     columns = [
-        "danceability",
-        "energy",
-        "key",
-        "loudness",
-        "mode",
-        "speechiness",
-        "acousticness",
-        "instrumentalness",
-        "liveness",
-        "valence",
-        "tempo",
-        "duration_ms",
-        "time_signature",
-        "song_name",
+        'PassengerId',
+        'HomePlanet',
+        'CryoSleep',
+        'Cabin',
+        'Destination',
+        'Age',
+        'VIP',
+        'RoomService',
+        'FoodCourt',
+        'ShoppingMall',
+        'Spa',
+        'VRDeck',
+        'Name'
     ]
     continuous_columns = []
     categorical_columns = []
     binary_columns = []
-    target_column = "genre"
+    target_column = "Transported"
 
     def __init__(
         self,
@@ -60,7 +60,7 @@ class TabularDataFrame(object):
 
         self.train = pd.read_csv(to_absolute_path("datasets/train.csv"))
         self.test = pd.read_csv(to_absolute_path("datasets/test.csv"))
-        self.id = self.test["ID"]
+        self.id = self.test["PassengerId"]
 
         self.train = self.train[self.columns + [self.target_column]]
         self.test = self.test[self.columns]
@@ -68,34 +68,34 @@ class TabularDataFrame(object):
         self.label_encoder = LabelEncoder().fit(self.train[self.target_column])
         self.train[self.target_column] = self.label_encoder.transform(self.train[self.target_column])
 
-    def _init_checker(self):
-        variables = ["continuous_columns", "categorical_columns", "binary_columns", "target_column", "data"]
-        for variable in variables:
-            if not hasattr(self, variable):
-                if variable == "data":
-                    if not (hasattr(self, "train") and hasattr(self, "test")):
-                        raise ValueError("TabularDataFrame does not define `data`, but neither does `train`, `test`.")
-                else:
-                    raise ValueError(f"TabularDataFrame does not define a attribute: `{variable}`")
+    # def _init_checker(self):
+    #     variables = ["continuous_columns", "categorical_columns", "binary_columns", "target_column", "data"]
+    #     for variable in variables:
+    #         if not hasattr(self, variable):
+    #             if variable == "data":
+    #                 if not (hasattr(self, "train") and hasattr(self, "test")):
+    #                     raise ValueError("TabularDataFrame does not define `data`, but neither does `train`, `test`.")
+    #             else:
+    #                 raise ValueError(f"TabularDataFrame does not define a attribute: `{variable}`")
 
-    def show_data_details(self, train: pd.DataFrame, test: pd.DataFrame):
-        all_data = pd.concat([train, test])
-        logger.info(f"Dataset size       : {len(all_data)}")
-        logger.info(f"All columns        : {all_data.shape[1] - 1}")
-        logger.info(f"Num of cate columns: {len(self.categorical_columns)}")
-        logger.info(f"Num of cont columns: {len(self.continuous_columns)}")
+    # def show_data_details(self, train: pd.DataFrame, test: pd.DataFrame):
+    #     all_data = pd.concat([train, test])
+    #     logger.info(f"Dataset size       : {len(all_data)}")
+    #     logger.info(f"All columns        : {all_data.shape[1] - 1}")
+    #     logger.info(f"Num of cate columns: {len(self.categorical_columns)}")
+    #     logger.info(f"Num of cont columns: {len(self.continuous_columns)}")
 
-        y = all_data[self.target_column]
-        class_ratios = y.value_counts(normalize=True)
-        for label, class_ratio in zip(class_ratios.index, class_ratios.values):
-            logger.info(f"class {label:<13}: {class_ratio:.3f}")
+    #     y = all_data[self.target_column]
+    #     class_ratios = y.value_counts(normalize=True)
+    #     for label, class_ratio in zip(class_ratios.index, class_ratios.values):
+    #         logger.info(f"class {label:<13}: {class_ratio:.3f}")
 
     def get_classify_dataframe(self) -> Dict[str, pd.DataFrame]:
         train = self.train
         test = self.test
         self.data_cate = pd.concat([train[self.categorical_columns], test[self.categorical_columns]])
 
-        self.show_data_details(train, test)
+        # self.show_data_details(train, test)
         classify_dfs = {
             "train": train,
             "test": test,
@@ -157,9 +157,13 @@ class TabularDataFrame(object):
         Returns:
             dict[str, DataFrame]: The value has the keys "train", "val" and "test".
         """
-        self._init_checker()
+        self.make_columns()
+        self.fillnan()
+        # self._init_checker()
         dfs = self.get_classify_dataframe()
         # preprocessing
+        
+
         self.fit_feature_encoder(dfs["train"])
         dfs = self.apply_feature_encoding(dfs)
         self.all_columns = list(self.categorical_columns) + list(self.continuous_columns) + list(self.binary_columns)
@@ -175,22 +179,72 @@ class TabularDataFrame(object):
 
         return categories_dict
 
+    def fillnan(self) -> None:
+        df_concat = pd.concat([self.train, self.test])
+
+        # 欠損値処理オブジェクトを作成
+        imputer_mode = SimpleImputer(strategy='most_frequent')
+        imputer_mean = SimpleImputer(strategy='mean')
+
+        if 'HomePlanet' in df_concat:
+            df_concat['HomePlanet'] = imputer_mode.fit_transform(df_concat[['HomePlanet']])[:, 0]
+        
+        if 'CryoSleep' in df_concat:
+            df_concat['CryoSleep'] = imputer_mode.fit_transform(df_concat[['CryoSleep']])[:, 0]
+
+        if 'Cabin' in df_concat:
+            ...
+        
+        if 'Destination' in df_concat:
+            df_concat['Destination'] = imputer_mode.fit_transform(df_concat[['Destination']])[:, 0]   
+        
+        if 'Age' in df_concat:
+            df_concat['Age'] = imputer_mean.fit_transform(df_concat[['Age']])[:, 0]
+        
+        if 'VIP' in df_concat:
+            df_concat['VIP'] = imputer_mode.fit_transform(df_concat[['VIP']])[:, 0]
+        
+        if 'RoomService' in df_concat:
+            df_concat['RoomService'] = imputer_mean.fit_transform(df_concat[['RoomService']])[:, 0]
+
+        if 'FoodCourt' in df_concat:
+            df_concat['FoodCourt'] = imputer_mean.fit_transform(df_concat[['FoodCourt']])[:, 0]
+        
+        if 'ShoppingMall' in df_concat:
+            df_concat['ShoppingMall'] = imputer_mean.fit_transform(df_concat[['ShoppingMall']])[:, 0]
+
+        if 'Spa' in df_concat:
+            df_concat['Spa'] = imputer_mean.fit_transform(df_concat[['Spa']])[:, 0]
+        
+        if 'VRDeck' in df_concat:
+            df_concat['VRDeck'] = imputer_mean.fit_transform(df_concat[['VRDeck']])[:, 0]    
+        
+        if 'Name' in df_concat:
+            ...
+        
+        if 'Cabin_deck' in df_concat:
+            df_concat['Cabin_deck'] = imputer_mode.fit_transform(df_concat[['Cabin_deck']])[:, 0]
+
+        if 'Cabin_side' in df_concat:
+            df_concat['Cabin_side'] = imputer_mode.fit_transform(df_concat[['Cabin_side']])[:, 0]
+        
+        self.train = df_concat[:len(self.train)]
+        self.test = df_concat[len(self.train):]
+        self.test.drop(self.target_column, axis=1, inplace=True)
+    
+    def make_columns(self) -> None:
+        ...
+
+        
 
 class V0(TabularDataFrame):
     continuous_columns = [
-        "danceability",
-        "energy",
-        "key",
-        "loudness",
-        "mode",
-        "speechiness",
-        "acousticness",
-        "instrumentalness",
-        "liveness",
-        "valence",
-        "tempo",
-        "duration_ms",
-        "time_signature",
+        'Age',
+        'RoomService',
+        'FoodCourt',
+        'ShoppingMall',
+        'Spa',
+        'VRDeck'
     ]
 
     def __init__(self, **kwargs) -> None:
@@ -198,67 +252,42 @@ class V0(TabularDataFrame):
 
 
 class V1(TabularDataFrame):
-    def set_continuous_columns(self):
-        continuous_columns = [
-            "danceability",
-            "energy",
-            "key",
-            "loudness",
-            "mode",
-            "speechiness",
-            "acousticness",
-            "instrumentalness",
-            "liveness",
-            "valence",
-            "tempo",
-            "duration_ms",
-            "time_signature",
-        ]
-        # The title of this song is "{song}".
-        song_embed = np.load(to_absolute_path("datasets/song_embed.npy"))
-        self.song_embed = pd.DataFrame(song_embed, columns=[f"song_embed_{i}" for i in range(song_embed.shape[1])])
-        self.continuous_columns = continuous_columns + self.song_embed.columns.tolist()
+    continuous_columns = [
+        'Age',
+        'RoomService',
+        'FoodCourt',
+        'ShoppingMall',
+        'Spa',
+        'VRDeck'
+    ]
+
+    categorical_columns = [
+        'HomePlanet',
+        'CryoSleep',
+        'Cabin',
+        'Destination',
+        'VIP',
+    ]
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.set_continuous_columns()
-        self.train = pd.concat([self.train, self.song_embed.iloc[: len(self.train)]], axis=1)
-        self.test = pd.concat([self.test, self.song_embed.iloc[len(self.train) :].reset_index(drop=True)], axis=1)
+    
+    def make_columns(self) -> None:
+        df_concat = pd.concat([self.train, self.test])
+        df_concat['Cabin_deck'] = df_concat['Cabin'].str[0]
+        df_concat['Cabin_side'] = df_concat['Cabin'].str[-1]
+
+        df_concat.drop('Cabin', axis=1, inplace=True)
+        self.categorical_columns = [col for col in self.categorical_columns if col !='Cabin']
+        self.categorical_columns.extend(['Cabin_deck', 'Cabin_side'])
 
 
-class V2(TabularDataFrame):
-    def set_continuous_columns(self):
-        continuous_columns = [
-            "danceability",
-            "energy",
-            "key",
-            "loudness",
-            "mode",
-            "speechiness",
-            "acousticness",
-            "instrumentalness",
-            "liveness",
-            "valence",
-            "tempo",
-            "duration_ms",
-            "time_signature",
-        ]
-        # Solve the task of estimating the genre of this song.
-        # The genres given are Dark Trap, Emo, Hiphop, Pop, Rap, RnB, Trap Metal, and Underground Rap.
-        # The title of this song is "{song}".
-        song_embed = np.load(to_absolute_path("datasets/song_paragraph_embed.npy"))
-        self.song_embed = pd.DataFrame(song_embed, columns=[f"song_embed_{i}" for i in range(song_embed.shape[1])])
-        self.continuous_columns = continuous_columns + self.song_embed.columns.tolist()
-
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-        self.set_continuous_columns()
-        self.train = pd.concat([self.train, self.song_embed.iloc[: len(self.train)]], axis=1)
-        self.test = pd.concat([self.test, self.song_embed.iloc[len(self.train) :].reset_index(drop=True)], axis=1)
+        self.train = df_concat[:len(self.train)]
+        self.test = df_concat[len(self.train):]
+        self.test.drop(self.target_column, axis=1, inplace=True)
+    
     
 
-
-    
 
 
     
