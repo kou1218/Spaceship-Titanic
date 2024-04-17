@@ -1,14 +1,17 @@
-import data.data as data
-from data import TableDataFrame, v1
+import logging
 
-from model import XGBoostClassifier
+import hydra
 
+import experiment
 from experiment import ExpBase
 
-from sklearn.model_selection import train_test_split
+logger = logging.getLogger(__name__)
 
-def main():
-    ExpBase.run()
+
+@hydra.main(config_path="conf", config_name="main")
+def main(config):
+    exp: ExpBase = getattr(experiment, config.exp.name)(config)
+    exp.run()
 
 
 if __name__ == "__main__":

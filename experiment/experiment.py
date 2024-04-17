@@ -89,8 +89,14 @@ class ExpBase:
             train_data, val_data = self.train.iloc[train_idx], self.train.iloc[val_idx]
             model, time = self.each_fold(i_fold, train_data, val_data)
 
+            # print("hika")
+
             score = cal_metrics(model, val_data, self.columns, self.target_column)
+            
             score.update(model.evaluate(val_data[self.columns], val_data[self.target_column].values.squeeze()))
+
+            # print("hika")
+
             logger.info(
                 f"[{self.model_name} results ({i_fold+1} / {self.n_splits})] val/ACC: {score['ACC']:.4f} | val/AUC: {score['AUC']:.4f} | "
                 f"val/F1: {score['F1']}"
@@ -101,7 +107,7 @@ class ExpBase:
             y_test_pred_all.append(
                 model.predict_proba(self.test[self.columns]).reshape(-1, 1, len(self.label_encoder.classes_))
             )
-
+        
         y_test_pred_all = np.argmax(np.concatenate(y_test_pred_all, axis=1).mean(axis=1), axis=1)
         submit_df = pd.DataFrame(self.id)
         submit_df["Transported"] = self.label_encoder.inverse_transform(y_test_pred_all)
