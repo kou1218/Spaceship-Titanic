@@ -1,2 +1,2 @@
-from .data import TableDataFrame, v1
+from .data import TabularDataFrame
 
