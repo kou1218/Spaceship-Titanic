@@ -89,14 +89,8 @@ class ExpBase:
             train_data, val_data = self.train.iloc[train_idx], self.train.iloc[val_idx]
             model, time = self.each_fold(i_fold, train_data, val_data)
 
-            # print("hika")
-
             score = cal_metrics(model, val_data, self.columns, self.target_column)
-            
             score.update(model.evaluate(val_data[self.columns], val_data[self.target_column].values.squeeze()))
-
-            # print("hika")
-
             logger.info(
                 f"[{self.model_name} results ({i_fold+1} / {self.n_splits})] val/ACC: {score['ACC']:.4f} | val/AUC: {score['AUC']:.4f} | "
                 f"val/F1: {score['F1']}"
