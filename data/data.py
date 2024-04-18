@@ -185,11 +185,12 @@ class TabularDataFrame(object):
         # 欠損値処理オブジェクトを作成
         imputer_mode = SimpleImputer(strategy='most_frequent')
         imputer_mean = SimpleImputer(strategy='mean')
-
+        
         if 'HomePlanet' in df_concat:
             df_concat['HomePlanet'] = imputer_mode.fit_transform(df_concat[['HomePlanet']])[:, 0]
         
         if 'CryoSleep' in df_concat:
+
             df_concat['CryoSleep'] = imputer_mode.fit_transform(df_concat[['CryoSleep']])[:, 0]
 
         if 'Cabin' in df_concat:
@@ -250,8 +251,7 @@ class V0(TabularDataFrame):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
-
-class V1(TabularDataFrame):
+class V2(TabularDataFrame):
     continuous_columns = [
         'Age',
         'RoomService',
@@ -271,6 +271,102 @@ class V1(TabularDataFrame):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
+    
+    def make_columns(self) -> None:
+        df_concat = pd.concat([self.train, self.test])
+        df_concat['Cabin_deck'] = df_concat['Cabin'].str[0]
+        df_concat['Cabin_side'] = df_concat['Cabin'].str[-1]
+
+        df_concat.drop('Cabin', axis=1, inplace=True)
+        self.categorical_columns = [col for col in self.categorical_columns if col !='Cabin']
+        self.categorical_columns.extend(['Cabin_deck', 'Cabin_side'])
+
+
+        self.train = df_concat[:len(self.train)]
+        self.test = df_concat[len(self.train):]
+        self.test.drop(self.target_column, axis=1, inplace=True)
+
+
+class V2(TabularDataFrame):
+    continuous_columns = [
+        'Age',
+        'RoomService',
+        'FoodCourt',
+        'ShoppingMall',
+        'Spa',
+        'VRDeck'
+    ]
+
+    categorical_columns = [
+        'HomePlanet',
+        'CryoSleep',
+        'Cabin',
+        'Destination',
+        'VIP',
+    ]
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+    
+    def fillnan(self) -> None:
+        df_concat = pd.concat([self.train, self.test])
+
+        # 欠損値処理オブジェクトを作成
+        imputer_mode = SimpleImputer(strategy='most_frequent')
+        imputer_mean = SimpleImputer(strategy='mean')
+
+        if 'RoomService' in df_concat:
+            df_concat.loc[df_concat['CryoSleep'] == True, ['RoomService']] = 0
+            df_concat['RoomService'] = imputer_mean.fit_transform(df_concat[['RoomService']])[:, 0]
+        
+        if 'FoodCourt' in df_concat:
+            df_concat.loc[df_concat['CryoSleep'] == True, ['FoodCourt']] = 0
+            df_concat['FoodCourt'] = imputer_mean.fit_transform(df_concat[['FoodCourt']])[:, 0]
+        
+        if 'ShoppingMall' in df_concat:
+            df_concat.loc[df_concat['CryoSleep'] == True, ['ShoppingMall']] = 0
+            df_concat['ShoppingMall'] = imputer_mean.fit_transform(df_concat[['ShoppingMall']])[:, 0]
+
+        if 'Spa' in df_concat:
+            df_concat.loc[df_concat['CryoSleep'] == True, ['Spa']] = 0
+            df_concat['Spa'] = imputer_mean.fit_transform(df_concat[['Spa']])[:, 0]
+        
+        if 'VRDeck' in df_concat:
+            df_concat.loc[df_concat['CryoSleep'] == True, ['VRDeck']] = 0
+            df_concat['VRDeck'] = imputer_mean.fit_transform(df_concat[['VRDeck']])[:, 0]  
+        
+        if 'HomePlanet' in df_concat:
+            df_concat['HomePlanet'] = imputer_mode.fit_transform(df_concat[['HomePlanet']])[:, 0]
+        
+        if 'CryoSleep' in df_concat:
+
+            df_concat['CryoSleep'] = imputer_mode.fit_transform(df_concat[['CryoSleep']])[:, 0]
+
+        if 'Cabin' in df_concat:
+            ...
+        
+        if 'Destination' in df_concat:
+            df_concat['Destination'] = imputer_mode.fit_transform(df_concat[['Destination']])[:, 0]   
+        
+        if 'Age' in df_concat:
+            df_concat['Age'] = imputer_mean.fit_transform(df_concat[['Age']])[:, 0]
+        
+        if 'VIP' in df_concat:
+            df_concat['VIP'] = imputer_mode.fit_transform(df_concat[['VIP']])[:, 0]
+          
+        
+        if 'Name' in df_concat:
+            ...
+        
+        if 'Cabin_deck' in df_concat:
+            df_concat['Cabin_deck'] = imputer_mode.fit_transform(df_concat[['Cabin_deck']])[:, 0]
+
+        if 'Cabin_side' in df_concat:
+            df_concat['Cabin_side'] = imputer_mode.fit_transform(df_concat[['Cabin_side']])[:, 0]
+        
+        self.train = df_concat[:len(self.train)]
+        self.test = df_concat[len(self.train):]
+        self.test.drop(self.target_column, axis=1, inplace=True)
     
     def make_columns(self) -> None:
         df_concat = pd.concat([self.train, self.test])
