@@ -7,17 +7,17 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 from .utils import f1_micro, f1_micro_lgb
+from .base_model import BaseClassifier
 
-class XGBoostClassifier:
-    def __init__(self, input_dim, output_dim, verbose) -> None:
-        self.input_dim = input_dim
-        self.output_dim = output_dim
-        self.verbose = verbose
+class XGBoostClassifier(BaseClassifier):
+    def __init__(self, input_dim, output_dim, model_config, verbose) -> None:
+        super().__init__(input_dim, output_dim, model_config, verbose)
         self.model = xgb.XGBClassifier(
             objective="multi:softmax",
             num_class=self.output_dim,
             # eval_metric=f1_micro,
-            early_stopping_rounds=50
+            early_stopping_rounds=50,
+            **self.model_config
         )
 
     def fit(self, X, y, eval_set):

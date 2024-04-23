@@ -1,4 +1,4 @@
-name: V1
+name: V2
 categorical_encoder: onehot # ordinal, onehot
 continuous_encoder: null # standard, minmax
 test_size: 0.2
