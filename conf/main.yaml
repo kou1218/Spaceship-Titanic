@@ -11,7 +11,7 @@ defaults:
   - model: xgboost
   - exp: simple
 
-n_splits: 10
+n_splits: 15
 metrics: F1
 
 seed: 42
