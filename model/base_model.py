@@ -9,10 +9,12 @@ from sklearn.metrics import (
 
 
 class BaseClassifier:
-    def __init__(self, input_dim, output_dim) -> None:
+    def __init__(self, input_dim, output_dim, model_config, verbose) -> None:
         self.model = None
         self.input_dim = input_dim
         self.output_dim = output_dim
+        self.model_config = model_config
+        self.verbose = verbose
 
     def fit(self, X, y, eval_set):
         raise NotImplementedError()
