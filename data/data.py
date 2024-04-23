@@ -109,6 +109,8 @@ class TabularDataFrame(object):
                 self._categorical_encoder = OrdinalEncoder(dtype=np.int32).fit(self.data_cate)
             elif self.categorical_encoder == "onehot":
                 self._categorical_encoder = OneHotEncoder(
+                    handle_unknown='error', 
+                    drop='first',
                     sparse_output=False,
                     feature_name_combiner=feature_name_combiner,
                     dtype=np.int32,
@@ -159,6 +161,10 @@ class TabularDataFrame(object):
         """
         self.make_columns()
         self.fillnan()
+        
+        self.add_new_feature()
+
+        # self.make_binary_columns()
         # self._init_checker()
         dfs = self.get_classify_dataframe()
         # preprocessing
@@ -236,6 +242,12 @@ class TabularDataFrame(object):
     def make_columns(self) -> None:
         ...
 
+    def make_binary_columns(self) -> None:
+        ...
+
+    def add_new_feature(self) -> None:
+        ...
+
         
 
 class V0(TabularDataFrame):
@@ -299,10 +311,15 @@ class V2(TabularDataFrame):
 
     categorical_columns = [
         'HomePlanet',
-        'CryoSleep',
         'Cabin',
         'Destination',
         'VIP',
+        'CryoSleep'
+    ]
+
+    binary_columns = [
+        # 'VIP',
+        # 'CryoSleep'
     ]
 
     def __init__(self, **kwargs) -> None:
@@ -316,37 +333,84 @@ class V2(TabularDataFrame):
         imputer_mean = SimpleImputer(strategy='mean')
 
         if 'RoomService' in df_concat:
-            df_concat.loc[df_concat['CryoSleep'] == True, ['RoomService']] = 0
-            df_concat['RoomService'] = imputer_mean.fit_transform(df_concat[['RoomService']])[:, 0]
+            # df_concat['RoomService'] = imputer_mean.fit_transform(df_concat[['RoomService']])[:, 0]
+            # df_concat.loc[df_concat['CryoSleep'] == True, ['RoomService']] = 0
+            df_concat['RoomService'].fillna(0, inplace=True)
         
         if 'FoodCourt' in df_concat:
-            df_concat.loc[df_concat['CryoSleep'] == True, ['FoodCourt']] = 0
-            df_concat['FoodCourt'] = imputer_mean.fit_transform(df_concat[['FoodCourt']])[:, 0]
+            # df_concat['FoodCourt'] = imputer_mean.fit_transform(df_concat[['FoodCourt']])[:, 0]
+            # df_concat.loc[df_concat['CryoSleep'] == True, ['FoodCourt']] = 0
+            df_concat['FoodCourt'].fillna(0, inplace=True)
         
         if 'ShoppingMall' in df_concat:
-            df_concat.loc[df_concat['CryoSleep'] == True, ['ShoppingMall']] = 0
-            df_concat['ShoppingMall'] = imputer_mean.fit_transform(df_concat[['ShoppingMall']])[:, 0]
+            # df_concat['ShoppingMall'] = imputer_mean.fit_transform(df_concat[['ShoppingMall']])[:, 0]
+            # df_concat.loc[df_concat['CryoSleep'] == True, ['ShoppingMall']] = 0
+            df_concat['ShoppingMall'].fillna(0, inplace=True)
 
         if 'Spa' in df_concat:
-            df_concat.loc[df_concat['CryoSleep'] == True, ['Spa']] = 0
-            df_concat['Spa'] = imputer_mean.fit_transform(df_concat[['Spa']])[:, 0]
+            # df_concat['Spa'] = imputer_mean.fit_transform(df_concat[['Spa']])[:, 0]
+            # df_concat.loc[df_concat['CryoSleep'] == True, ['Spa']] = 0
+            df_concat['Spa'].fillna(0, inplace=True)
         
         if 'VRDeck' in df_concat:
-            df_concat.loc[df_concat['CryoSleep'] == True, ['VRDeck']] = 0
-            df_concat['VRDeck'] = imputer_mean.fit_transform(df_concat[['VRDeck']])[:, 0]  
+            # df_concat['VRDeck'] = imputer_mean.fit_transform(df_concat[['VRDeck']])[:, 0]
+            # df_concat.loc[df_concat['CryoSleep'] == True, ['VRDeck']] = 0
+            df_concat['VRDeck'].fillna(0, inplace=True)
         
         if 'HomePlanet' in df_concat:
-            df_concat['HomePlanet'] = imputer_mode.fit_transform(df_concat[['HomePlanet']])[:, 0]
+            # df_concat['HomePlanet'] = imputer_mode.fit_transform(df_concat[['HomePlanet']])[:, 0]
+
+            # vs_code上では上がったが提出したら下がった
+            # # Cabin_deckがA,B,Cの場合はEuropaで埋める
+            # df_concat.loc[df_concat['Cabin_deck'].isin(['A', 'B', 'C']), 'HomePlanet'] = 'Europa'
+            # # それ以外の場合はEarthで埋める
+            # df_concat['HomePlanet'].fillna('Earth', inplace=True)
+
+            # 今のところ一番提出スコアが良い
+            # HomePlanet の欠損値を処理
+            for i, row in df_concat.iterrows():
+                if pd.isnull(row['HomePlanet']):
+                    if row['Cabin_deck'] in ['A', 'B', 'C']:
+                        df_concat.at[i, 'HomePlanet'] = 'Europa'
+                    elif row['Cabin_deck'] in ['D']:
+                        # Mars か Europa をランダムに選ぶ
+                        df_concat.at[i, 'HomePlanet'] = np.random.choice(['Mars', 'Europa'], p=[0.66, 0.34])
+                    elif row['Cabin_deck'] in ['E']:
+                        # ランダムに選ぶ
+                        df_concat.at[i, 'HomePlanet'] = np.random.choice(['Mars', 'Europa', 'Earth'], p=[0.40, 0.15, 0.45])
+                    elif row['Cabin_deck'] in ['F']:
+                        # Mars か Earth をランダムに選ぶ
+                        df_concat.at[i, 'HomePlanet'] = np.random.choice(['Mars', 'Earth'], p=[0.4, 0.6])
+                    elif row['Cabin_deck'] in ['G']:
+                        df_concat.at[i, 'HomePlanet'] = 'Earth'
+                    elif row['Cabin_deck'] in ['T']:
+                        df_concat.at[i, 'HomePlanet'] = 'Europa'
+
+            # vscode上では下がる
+            df_concat['HomePlanet'] = imputer_mode.fit_transform(df_concat[['HomePlanet']])[:, 0]   
         
         if 'CryoSleep' in df_concat:
+            df_concat.loc[(df_concat['RoomService'] == 0) & (df_concat['FoodCourt'] == 0) & (df_concat['ShoppingMall'] == 0) & (df_concat['Spa'] == 0) & (df_concat['VRDeck'] == 0), ['CryoSleep']] = True
+            # df_concat['CryoSleep'] = imputer_mode.fit_transform(df_concat[['CryoSleep']])[:, 0]
+            df_concat['CryoSleep'].fillna(False, inplace=True)
 
-            df_concat['CryoSleep'] = imputer_mode.fit_transform(df_concat[['CryoSleep']])[:, 0]
 
         if 'Cabin' in df_concat:
             ...
         
         if 'Destination' in df_concat:
-            df_concat['Destination'] = imputer_mode.fit_transform(df_concat[['Destination']])[:, 0]   
+            df_concat['Destination'] = imputer_mode.fit_transform(df_concat[['Destination']])[:, 0] 
+
+            # vscode上では上がるが提出したら下がる
+            # # Destination の欠損値を処理
+            # for i, row in df_concat.iterrows():
+            #     if pd.isnull(row['Destination']):
+            #         if row['HomePlanet'] in ['Europa']:
+            #             df_concat.at[i, 'Destination'] = np.random.choice(['TRAPPIST-1e', 'PSO J318.5-22', '55 Cancri e'], p=[0.574, 0.009, 0.417])
+            #         elif row['HomePlanet'] in ['Mars']:
+            #             df_concat.at[i, 'Destination'] = np.random.choice(['TRAPPIST-1e', 'PSO J318.5-22', '55 Cancri e'], p=[0.862, 0.026, 0.112])
+            #         elif row['HomePlanet'] in ['Earth']:
+            #             df_concat.at[i, 'Destination'] = np.random.choice(['TRAPPIST-1e', 'PSO J318.5-22', '55 Cancri e'], p=[0.7, 0.15, 0.15])  
         
         if 'Age' in df_concat:
             df_concat['Age'] = imputer_mean.fit_transform(df_concat[['Age']])[:, 0]
@@ -357,16 +421,39 @@ class V2(TabularDataFrame):
         
         if 'Name' in df_concat:
             ...
-        
+
         if 'Cabin_deck' in df_concat:
-            df_concat['Cabin_deck'] = imputer_mode.fit_transform(df_concat[['Cabin_deck']])[:, 0]
+            # Cabin_deck の欠損値を処理
+            for i, row in df_concat.iterrows():
+                if pd.isnull(row['Cabin_deck']):
+                    if row['HomePlanet'] in ['Europa']:
+                        df_concat.at[i, 'Cabin_deck'] = np.random.choice(['A', 'B', 'C', 'D', 'E'], p=[0.12, 0.37, 0.37, 0.08, 0.06])
+                    elif row['HomePlanet'] in ['Mars']:
+                        df_concat.at[i, 'Cabin_deck'] = np.random.choice(['E', 'F', 'D'], p=[0.2, 0.2, 0.6])
+                    elif row['HomePlanet'] in ['Earth']:
+                        df_concat.at[i, 'Cabin_deck'] = np.random.choice(['E', 'F', 'G'], p=[0.1, 0.35, 0.55])
+
+            df_concat['Cabin_deck'] = imputer_mode.fit_transform(df_concat[['Cabin_deck']])[:, 0]        
 
         if 'Cabin_side' in df_concat:
-            df_concat['Cabin_side'] = imputer_mode.fit_transform(df_concat[['Cabin_side']])[:, 0]
-        
+            # df_concat['Cabin_side'] = imputer_mode.fit_transform(df_concat[['Cabin_side']])[:, 0]
+
+            # Cabin_sideカラムの欠損値を含む行を特定
+            missing_rows = df_concat['Cabin_side'].isnull()
+
+            # 欠損値を'P'または'S'のいずれかでランダムに埋める
+            random_values = np.random.choice(['P', 'S'], size=len(df_concat))
+            df_concat.loc[missing_rows, 'Cabin_side'] = random_values[missing_rows]
+
+
         self.train = df_concat[:len(self.train)]
         self.test = df_concat[len(self.train):]
         self.test.drop(self.target_column, axis=1, inplace=True)
+
+        # print(df_concat.isnull().sum())
+        # exit()       
+
+        
     
     def make_columns(self) -> None:
         df_concat = pd.concat([self.train, self.test])
@@ -377,11 +464,76 @@ class V2(TabularDataFrame):
         self.categorical_columns = [col for col in self.categorical_columns if col !='Cabin']
         self.categorical_columns.extend(['Cabin_deck', 'Cabin_side'])
 
+        # df_concat.drop('VIP', axis=1, inplace=True)
+        # self.categorical_columns = [col for col in self.categorical_columns if col !='VIP']
+        # df_concat['VIP'] = df_concat['VIP'].map({'True': True, 'False': False})
+        # df_concat['CryoSleep'] = df_concat['CryoSleep'].map({'True': True, 'False': False})
+
+
 
         self.train = df_concat[:len(self.train)]
         self.test = df_concat[len(self.train):]
         self.test.drop(self.target_column, axis=1, inplace=True)
+
     
+    def make_binary_columns(self) -> None:
+        df_concat = pd.concat([self.train, self.test])
+
+        df_concat['VIP'] = df_concat['VIP'].astype('bool')
+
+        df_concat['CryoSleep'] = df_concat['CryoSleep'].astype('bool')
+
+        self.train = df_concat[:len(self.train)]
+        self.test = df_concat[len(self.train):]
+        self.test.drop(self.target_column, axis=1, inplace=True)
+
+    
+    def add_new_feature(self) -> None:
+        df_concat = pd.concat([self.train, self.test])
+
+        # add特徴量
+        df_concat['HomePlanet_CryoSleep'] = df_concat['HomePlanet'] * df_concat['CryoSleep']
+        self.categorical_columns.extend(['HomePlanet_CryoSleep'])
+
+        # add特徴量
+        df_concat['TotalSpent'] = df_concat['RoomService'] + df_concat['FoodCourt'] + df_concat['ShoppingMall'] + df_concat['Spa'] + df_concat['VRDeck']
+        self.continuous_columns.extend(['TotalSpent'])
+        # # vscode上で精度ギャン下がり
+        # df_concat.drop('RoomService', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='RoomService']
+        # df_concat.drop('FoodCourt', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='FoodCourt']
+        # df_concat.drop('ShoppingMall', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='ShoppingMall']
+        # df_concat.drop('Spa', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='Spa']
+        # df_concat.drop('VRDeck', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='VRDeck']
+
+        # add特徴量
+        df_concat['Cabin_deck_CryoSleep'] = df_concat['Cabin_deck'] * df_concat['CryoSleep']
+        self.categorical_columns.extend(['Cabin_deck_CryoSleep'])
+
+        # cvは上がるが提出時下がる
+        # # add特徴量
+        # df_concat['HomePlanet_Destination'] = df_concat['HomePlanet'] + df_concat['Destination']
+        # self.categorical_columns.extend(['HomePlanet_Destination'])
+
+        # # add特徴量
+        # df_concat['Cabin_deck_Destination'] = df_concat['Cabin_deck'] + df_concat['Destination']
+        # self.categorical_columns.extend(['Cabin_deck_Destination'])
+
+
+
+        # print(df_concat.head())
+        # print(df_concat.isnull().sum())
+        # exit()
+        
+        self.train = df_concat[:len(self.train)]
+        self.test = df_concat[len(self.train):]
+        self.test.drop(self.target_column, axis=1, inplace=True)
+
+        
     
 
 
