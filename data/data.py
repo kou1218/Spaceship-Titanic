@@ -251,7 +251,7 @@ class V0(TabularDataFrame):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
-class V2(TabularDataFrame):
+class V1(TabularDataFrame):
     continuous_columns = [
         'Age',
         'RoomService',
