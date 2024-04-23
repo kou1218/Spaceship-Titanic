@@ -17,7 +17,10 @@ git push origin <ブランチ名>
 その後github上で誰かがmergeする
 
 ### 誰かがpushした場合
-git pull origin <自分のいるブランチ名>（間違えている可能性あり）
+自分のブランチでadd,commitを完了したうえでローカルのmainブランチで
+git pull origin <自分のいるブランチ名>
+その後
+git merge main
 
 # パッケージの管理
 パッケージはpoetryを用いて管理。具体的な管理方法は以下を参照。

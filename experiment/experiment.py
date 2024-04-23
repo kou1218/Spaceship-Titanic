@@ -11,7 +11,7 @@ import data.data as data
 from data import TabularDataFrame
 from model import XGBoostClassifier
 
-# from .optuna import OptimParam
+from .optuna import OptimParam
 from .utils import cal_metrics, set_seed
 
 logger = logging.getLogger(__name__)
@@ -66,7 +66,9 @@ class ExpBase:
         model = XGBoostClassifier(
             input_dim=self.input_dim,
             output_dim=self.output_dim,
+            model_config=model_config,
             verbose=self.exp_config.verbose,
+            seed=self.seed,
         )
         start = time()
         model.fit(
@@ -127,3 +129,46 @@ class ExpSimple(ExpBase):
 
     def get_model_config(self, *args, **kwargs):
         return self.model_config
+
+class ExpOptuna(ExpBase):
+    def __init__(self, config):
+        super().__init__(config)
+        self.n_trials = config.exp.n_trials
+        self.n_startup_trials = config.exp.n_startup_trials
+
+        self.storage = config.exp.storage
+        self.study_name = config.exp.study_name
+        self.cv = config.exp.cv
+        self.n_jobs = config.exp.n_jobs
+
+    def run(self):
+        if self.exp_config.delete_study:
+            for i in range(self.n_splits):
+                optuna.delete_study(
+                    study_name=f"{self.exp_config.study_name}_{i}",
+                    storage=f"sqlite:///{to_absolute_path(self.exp_config.storage)}/optuna.db",
+                )
+                print(f"delete successful in {i}")
+            return
+        super().run()
+
+    def get_model_config(self, i_fold, x, y, val_data):
+        op = OptimParam(
+            self.model_name,
+            default_config=self.model_config,
+            input_dim=self.input_dim,
+            output_dim=self.output_dim,
+            X=x,
+            y=y,
+            val_data=val_data,
+            columns=self.columns,
+            target_column=self.target_column,
+            n_trials=self.n_trials,
+            n_startup_trials=self.n_startup_trials,
+            storage=self.storage,
+            study_name=f"{self.study_name}_{i_fold}",
+            cv=self.cv,
+            n_jobs=self.n_jobs,
+            seed=self.seed,
+        )
+        return op.get_best_config()
