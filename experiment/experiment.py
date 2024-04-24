@@ -67,8 +67,7 @@ class ExpBase:
             input_dim=self.input_dim,
             output_dim=self.output_dim,
             model_config=model_config,
-            verbose=self.exp_config.verbose,
-            seed=self.seed,
+            verbose=self.exp_config.verbose
         )
         start = time()
         model.fit(
