@@ -514,13 +514,14 @@ class V2(TabularDataFrame):
         df_concat['Cabin_deck_CryoSleep'] = df_concat['Cabin_deck'] * df_concat['CryoSleep']
         self.categorical_columns.extend(['Cabin_deck_CryoSleep'])
 
-        # add特徴量
-        df_concat['HomePlanet_Destination'] = df_concat['HomePlanet'] + df_concat['Destination']
-        self.categorical_columns.extend(['HomePlanet_Destination'])
+        # cvは上がるが提出時下がる
+        # # add特徴量
+        # df_concat['HomePlanet_Destination'] = df_concat['HomePlanet'] + df_concat['Destination']
+        # self.categorical_columns.extend(['HomePlanet_Destination'])
 
-        # add特徴量
-        df_concat['Cabin_deck_Destination'] = df_concat['Cabin_deck'] + df_concat['Destination']
-        self.categorical_columns.extend(['Cabin_deck_Destination'])
+        # # add特徴量
+        # df_concat['Cabin_deck_Destination'] = df_concat['Cabin_deck'] + df_concat['Destination']
+        # self.categorical_columns.extend(['Cabin_deck_Destination'])
 
 
 
