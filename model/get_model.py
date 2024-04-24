@@ -1,15 +1,15 @@
 from experiment.utils import set_seed
 
 
-from .model import XGBoostClassifier
+from .model import XGBoostClassifier, LightGBMClassifier
 
 
 def get_classifier(name, *, input_dim, output_dim, model_config, seed=42, verbose=0):
     set_seed(seed=seed)
     if name == "xgboost":
         return XGBoostClassifier(input_dim, output_dim, model_config, verbose)
-    # elif name == "lightgbm":
-    #     return LightGBMClassifier(input_dim, output_dim, model_config, verbose)
+    elif name == "lightgbm":
+        return LightGBMClassifier(input_dim, output_dim, model_config, verbose)
     # elif name == "xgblgbm":
     #     return XGBLGBMClassifier(input_dim, output_dim, model_config, verbose)
     # elif name == "xgb5lgbm5":

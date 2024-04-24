@@ -9,7 +9,7 @@ from sklearn.model_selection import StratifiedKFold
 
 import data.data as data
 from data import TabularDataFrame
-from model import XGBoostClassifier
+from model import get_classifier
 
 from .optuna import OptimParam
 from .utils import cal_metrics, set_seed
@@ -63,11 +63,12 @@ class ExpBase:
         x, y = self.get_x_y(train_data)
 
         model_config = self.get_model_config(i_fold=i_fold, x=x, y=y, val_data=val_data)
-        model = XGBoostClassifier(
+        model = get_classifier(
+            self.model_name,
             input_dim=self.input_dim,
             output_dim=self.output_dim,
             model_config=model_config,
-            verbose=self.exp_config.verbose
+            verbose=self.exp_config.verbose,
         )
         start = time()
         model.fit(
