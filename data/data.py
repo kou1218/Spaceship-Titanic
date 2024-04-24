@@ -445,6 +445,9 @@ class V2(TabularDataFrame):
             random_values = np.random.choice(['P', 'S'], size=len(df_concat))
             df_concat.loc[missing_rows, 'Cabin_side'] = random_values[missing_rows]
 
+        if 'Cabin_num' in df_concat:
+            df_concat['Cabin_num'].fillna(10000,inplace=True)
+
 
         self.train = df_concat[:len(self.train)]
         self.test = df_concat[len(self.train):]
@@ -458,11 +461,14 @@ class V2(TabularDataFrame):
     def make_columns(self) -> None:
         df_concat = pd.concat([self.train, self.test])
         df_concat['Cabin_deck'] = df_concat['Cabin'].str[0]
+        df_concat['Cabin_num'] = df_concat['Cabin'].str[2]
         df_concat['Cabin_side'] = df_concat['Cabin'].str[-1]
 
         df_concat.drop('Cabin', axis=1, inplace=True)
         self.categorical_columns = [col for col in self.categorical_columns if col !='Cabin']
         self.categorical_columns.extend(['Cabin_deck', 'Cabin_side'])
+        self.continuous_columns.extend(['Cabin_num'])
+        
 
         # df_concat.drop('VIP', axis=1, inplace=True)
         # self.categorical_columns = [col for col in self.categorical_columns if col !='VIP']
@@ -513,6 +519,10 @@ class V2(TabularDataFrame):
         # add特徴量
         df_concat['Cabin_deck_CryoSleep'] = df_concat['Cabin_deck'] * df_concat['CryoSleep']
         self.categorical_columns.extend(['Cabin_deck_CryoSleep'])
+
+        # add特徴量
+        df_concat['HomePlanet_Cabin_deck'] = df_concat['HomePlanet'] + df_concat['Cabin_deck']
+        self.categorical_columns.extend(['HomePlanet_Cabin_deck'])
 
         # cvは上がるが提出時下がる
         # # add特徴量
