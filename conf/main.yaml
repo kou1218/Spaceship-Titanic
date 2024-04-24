@@ -8,7 +8,7 @@ hydra:
 defaults:
   - _self_
   - data: base
-  - model: xgboost
+  - model: lightgbm
   - exp: simple
 
 n_splits: 15
