@@ -8,3 +8,14 @@ colsample_bylevel: null
 gamma: null
 alpha: null
 lambda: null
+
+# max_depth: 7
+# n_estimators: 10000
+# eta: 0.5052844563833545
+# min_child_weight: 1.2520364357782506e-08
+# subsample: 0.7503514420052841
+# colsample_bytree: 0.9608452498160566
+# colsample_bylevel: 0.7096763211890253
+# gamma: 1.3652034300633597e-07
+# alpha: 4.668770913688329e-06
+# lambda: 14.92475775178962
