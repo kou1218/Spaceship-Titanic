@@ -447,6 +447,7 @@ class V2(TabularDataFrame):
 
         if 'Cabin_num' in df_concat:
             df_concat['Cabin_num'].fillna(10000,inplace=True)
+            df_concat['Cabin_num'] = df_concat['Cabin_num'].astype(int)
 
 
         self.train = df_concat[:len(self.train)]
@@ -524,6 +525,26 @@ class V2(TabularDataFrame):
         df_concat['HomePlanet_Cabin_deck'] = df_concat['HomePlanet'] + df_concat['Cabin_deck']
         self.categorical_columns.extend(['HomePlanet_Cabin_deck'])
 
+        # # add特徴量
+        # df_concat['Cabin_deck_side'] = df_concat['Cabin_deck'] + df_concat['Cabin_side']
+        # self.categorical_columns.extend(['Cabin_deck_side'])
+
+        bins = [0, 16, 28, 36, 46, 58, 66, df_concat['Age'].max()+1]
+        labels = ['0-16', '17-28', '29-36', '37-46', '47-58', '59-66', '67+']
+        df_concat['Age_bin'] = pd.cut(df_concat['Age'], bins=bins, labels=labels, right=False)
+        self.categorical_columns.extend(['Age_bin'])
+
+        # bins = [0, 320, 640, 800, 1180, 1500, 1820, 5000 ,df_concat['Cabin_num'].max()+1]
+        # labels = ['0-320', '320-640', '640-800', '800-1180', '1180-1500', '1500-1820', '1800-5000', '2000+']
+        # df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['Cabin_num_bin'])
+
+        # bins = [0, 500, 1000, 1500, 2000, df_concat['Cabin_num'].max()+1]
+        # labels = ['0-500', '500-1000', '1000-1500', '1500-2000', '1180-1500', '1500-1820', '1800-5000', '2000+']
+        # df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['Cabin_num_bin'])
+
+
         # cvは上がるが提出時下がる
         # # add特徴量
         # df_concat['HomePlanet_Destination'] = df_concat['HomePlanet'] + df_concat['Destination']
@@ -536,6 +557,7 @@ class V2(TabularDataFrame):
 
 
         # print(df_concat.head())
+        # print(df_concat[df_concat['Age_bin'].isnull()])
         # print(df_concat.isnull().sum())
         # exit()
         
