@@ -24,10 +24,22 @@ def xgboost_config(trial: optuna.Trial, model_config, name=""):
     model_config["lambda"] = trial.suggest_float("lambda", 1e-8, 1e2, log=True)
     return model_config
 
+def catboost_config(trial: optuna.Trial, model_config, name=""):
+    model_config.depth = trial.suggest_int("depth", 3, 10)
+    model_config.n_estimators = trial.suggest_int("n_estimators", 100, 10000)
+    model_config.learning_rate = trial.suggest_float("learning_rate", 1e-5, 1.0, log=True)
+    model_config.early_stopping_rounds = trial.suggest_int("early_stopping_rounds", 5, 100)
+    model_config.l2_leaf_reg = trial.suggest_int("l2_leaf_reg", 1, 10)
+    model_config.random_strength = trial.suggest_float("random_strength", 1.0, 10.0)
+    model_config.rsm = trial.suggest_float("rsm", 0.0, 1.0)
+
+    return model_config
 
 def get_model_config(model_name):
     if model_name == "xgboost":
         return xgboost_config
+    elif model_name == "catboost":
+        return catboost_config
     else:
         raise ValueError()
 
@@ -110,7 +122,7 @@ class OptimParam:
         return score
 
     def cross_validation(self, model_config):
-        skf = StratifiedKFold(n_splits=10, random_state=self.seed, shuffle=True)
+        skf = StratifiedKFold(n_splits=5, random_state=self.seed, shuffle=True)
         ave_f1 = []
         for _, (train_idx, val_idx) in enumerate(skf.split(self.X, self.y)):
             X_train, y_train = self.X.iloc[train_idx], self.y[train_idx]

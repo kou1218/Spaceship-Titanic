@@ -5,7 +5,7 @@ import numpy as np
 import optuna
 import pandas as pd
 from hydra.utils import to_absolute_path
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold, train_test_split
 
 import data.data as data
 from data import TabularDataFrame
@@ -150,7 +150,10 @@ class ExpOptuna(ExpBase):
                 )
                 print(f"delete successful in {i}")
             return
-        super().run()
+        # super().run()
+        train_data, val_data = train_test_split(self.train, test_size=0.2)
+        x, y = self.get_x_y(train_data)
+        print(self.get_model_config(1, x, y, val_data))
 
     def get_model_config(self, i_fold, x, y, val_data):
         op = OptimParam(
@@ -166,7 +169,8 @@ class ExpOptuna(ExpBase):
             n_trials=self.n_trials,
             n_startup_trials=self.n_startup_trials,
             storage=self.storage,
-            study_name=f"{self.study_name}_{i_fold}",
+            # study_name=f"{self.study_name}_{i_fold}",
+            study_name=f"{self.study_name}",
             cv=self.cv,
             n_jobs=self.n_jobs,
             seed=self.seed,
