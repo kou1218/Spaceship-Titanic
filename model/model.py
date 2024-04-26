@@ -90,7 +90,7 @@ class CBTClassifier(BaseClassifier):
         super().__init__(input_dim, output_dim, model_config, verbose)
 
         self.model = cbt.CatBoostClassifier(
-            custom_loss=['Accuracy'],
+            loss_function="Logloss",
             verbose=self.verbose,
             random_seed=seed,
             **self.model_config,
