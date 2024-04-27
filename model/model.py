@@ -12,6 +12,9 @@ from .utils import f1_micro, f1_micro_lgb
 from .base_model import BaseClassifier
 
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 class XGBoostClassifier(BaseClassifier):
     def __init__(self, input_dim, output_dim, model_config, verbose) -> None:
@@ -87,3 +90,48 @@ class RFClassifier(BaseClassifier):
 
         self.model.fit(X, y)
 
+# 勾配ブースト分類器
+class GBClassifier(BaseClassifier):
+    def __init__(self, input_dim, output_dim, model_config, verbose, seed=42) -> None:
+        super().__init__(input_dim, output_dim, model_config, verbose)
+
+        self.model = GradientBoostingClassifier(
+            verbose=self.verbose,
+            random_state=seed,
+            **self.model_config,
+        )
+
+    def fit(self, X, y, eval_set):
+        self._column_names = X.columns
+
+        self.model.fit(X, y)
+
+# ランダムフォレスト分類器の拡張版
+class ETClassifier(BaseClassifier):
+    def __init__(self, input_dim, output_dim, model_config, verbose, seed=42) -> None:
+        super().__init__(input_dim, output_dim, model_config, verbose)
+
+        self.model = ExtraTreesClassifier(
+            verbose=self.verbose,
+            random_state=seed,
+            **self.model_config,
+        )
+
+    def fit(self, X, y, eval_set):
+        self._column_names = X.columns
+
+        self.model.fit(X, y)
+
+# k 近傍法分類器
+class KNClassifier(BaseClassifier):
+    def __init__(self, input_dim, output_dim, model_config, verbose, seed=42) -> None:
+        super().__init__(input_dim, output_dim, model_config, verbose)
+
+        self.model = KNeighborsClassifier(
+            **self.model_config,
+        )
+
+    def fit(self, X, y, eval_set):
+        self._column_names = X.columns
+
+        self.model.fit(X, y)
