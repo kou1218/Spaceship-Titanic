@@ -271,8 +271,8 @@ class ExpStacking(ExpBase):
         self.model_name = 'xgboost2'
         # カラム名を2層目用に変更
         self.columns = test_predict.columns
-        print(self.columns)
-        exit()
+        # print(self.columns)
+        # exit()
 
 
         skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=self.seed)
