@@ -24,6 +24,9 @@ def xgboost_config(trial: optuna.Trial, model_config, name=""):
     model_config["lambda"] = trial.suggest_float("lambda", 1e-8, 1e2, log=True)
     return model_config
 
+def lightgbm_config(trial: optuna.Trial, model_config, name=""):
+    ...
+
 def catboost_config(trial: optuna.Trial, model_config, name=""):
     model_config.depth = trial.suggest_int("depth", 3, 10)
     model_config.n_estimators = trial.suggest_int("n_estimators", 100, 10000)
@@ -32,14 +35,44 @@ def catboost_config(trial: optuna.Trial, model_config, name=""):
     model_config.l2_leaf_reg = trial.suggest_int("l2_leaf_reg", 1, 10)
     model_config.random_strength = trial.suggest_float("random_strength", 1.0, 10.0)
     model_config.rsm = trial.suggest_float("rsm", 0.0, 1.0)
-
     return model_config
+
+def randomforest_config(trial: optuna.Trial, model_config, name=""):
+    model_config.n_estimators = trial.suggest_int("n_estimators", 10, 10000)
+    model_config.max_depth = trial.suggest_int("max_depth", 2, 100)
+    model_config.max_features = trial.suggest_float('max_features', 0, 1.0)
+    model_config.max_leaf_nodes = trial.suggest_int('max_leaf_nodes', 1, 1000)
+    model_config.min_samples_split = trial.suggest_int('min_samples_split', 2, 5)
+    model_config.min_samples_leaf = trial.suggest_int('min_samples_leaf', 1, 10)
+    return model_config
+
+def gradientboosting_config(trial: optuna.Trial, model_config, name=""):
+    ...
+
+def extratrees_config(trial: optuna.Trial, model_config, name=""):
+    ...
+
+def kneighbors_config(trial: optuna.Trial, model_config, name=""):
+    ...
+
+
 
 def get_model_config(model_name):
     if model_name == "xgboost":
         return xgboost_config
+    elif model_name == "lightgbm":
+        return lightgbm_config
     elif model_name == "catboost":
         return catboost_config
+    elif model_name == "randomforest":
+        return randomforest_config
+    elif model_name == "gradientboosting":
+        return gradientboosting_config
+    elif model_name == "extratrees":
+        return extratrees_config
+    elif model_name == "kneighbors":
+        return kneighbors_config
+    
     else:
         raise ValueError()
 
