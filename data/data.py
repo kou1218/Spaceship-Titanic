@@ -399,18 +399,18 @@ class V2(TabularDataFrame):
             ...
         
         if 'Destination' in df_concat:
-            df_concat['Destination'] = imputer_mode.fit_transform(df_concat[['Destination']])[:, 0] 
+            # df_concat['Destination'] = imputer_mode.fit_transform(df_concat[['Destination']])[:, 0] 
 
             # vscode上では上がるが提出したら下がる
-            # # Destination の欠損値を処理
-            # for i, row in df_concat.iterrows():
-            #     if pd.isnull(row['Destination']):
-            #         if row['HomePlanet'] in ['Europa']:
-            #             df_concat.at[i, 'Destination'] = np.random.choice(['TRAPPIST-1e', 'PSO J318.5-22', '55 Cancri e'], p=[0.574, 0.009, 0.417])
-            #         elif row['HomePlanet'] in ['Mars']:
-            #             df_concat.at[i, 'Destination'] = np.random.choice(['TRAPPIST-1e', 'PSO J318.5-22', '55 Cancri e'], p=[0.862, 0.026, 0.112])
-            #         elif row['HomePlanet'] in ['Earth']:
-            #             df_concat.at[i, 'Destination'] = np.random.choice(['TRAPPIST-1e', 'PSO J318.5-22', '55 Cancri e'], p=[0.7, 0.15, 0.15])  
+            # Destination の欠損値を処理
+            for i, row in df_concat.iterrows():
+                if pd.isnull(row['Destination']):
+                    if row['HomePlanet'] in ['Europa']:
+                        df_concat.at[i, 'Destination'] = np.random.choice(['TRAPPIST-1e', 'PSO J318.5-22', '55 Cancri e'], p=[0.574, 0.009, 0.417])
+                    elif row['HomePlanet'] in ['Mars']:
+                        df_concat.at[i, 'Destination'] = np.random.choice(['TRAPPIST-1e', 'PSO J318.5-22', '55 Cancri e'], p=[0.862, 0.026, 0.112])
+                    elif row['HomePlanet'] in ['Earth']:
+                        df_concat.at[i, 'Destination'] = np.random.choice(['TRAPPIST-1e', 'PSO J318.5-22', '55 Cancri e'], p=[0.7, 0.15, 0.15])  
         
         if 'Age' in df_concat:
             df_concat['Age'] = imputer_mean.fit_transform(df_concat[['Age']])[:, 0]
@@ -446,7 +446,19 @@ class V2(TabularDataFrame):
             df_concat.loc[missing_rows, 'Cabin_side'] = random_values[missing_rows]
 
         if 'Cabin_num' in df_concat:
-            df_concat['Cabin_num'].fillna(10000,inplace=True)
+            # df_concat['Cabin_num'].fillna(10000,inplace=True)
+
+            cabin_deck_dict = {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'T': 0}
+
+            for i, row in df_concat.iterrows():
+                letter = df_concat['Cabin_deck'].iloc[i]
+                if letter in cabin_deck_dict:
+                    cabin_deck_dict[letter] += 1
+
+                if pd.isnull(row['Cabin_num']):
+                    df_concat.at[i,'Cabin_num'] = cabin_deck_dict[letter]
+
+            
             df_concat['Cabin_num'] = df_concat['Cabin_num'].astype(int)
 
 
@@ -454,6 +466,8 @@ class V2(TabularDataFrame):
         self.test = df_concat[len(self.train):]
         self.test.drop(self.target_column, axis=1, inplace=True)
 
+        # print(df_concat['PassengerId'].head())
+        # print(df_concat['Family'].head(4276))
         # print(df_concat.isnull().sum())
         # exit()       
 
@@ -461,14 +475,21 @@ class V2(TabularDataFrame):
     
     def make_columns(self) -> None:
         df_concat = pd.concat([self.train, self.test])
-        df_concat['Cabin_deck'] = df_concat['Cabin'].str[0]
-        df_concat['Cabin_num'] = df_concat['Cabin'].str[2]
-        df_concat['Cabin_side'] = df_concat['Cabin'].str[-1]
+        df_concat[["Cabin_deck", "Cabin_num", "Cabin_side"]] = df_concat["Cabin"].str.split("/", expand=True)
 
         df_concat.drop('Cabin', axis=1, inplace=True)
         self.categorical_columns = [col for col in self.categorical_columns if col !='Cabin']
         self.categorical_columns.extend(['Cabin_deck', 'Cabin_side'])
         self.continuous_columns.extend(['Cabin_num'])
+
+        # ファミリーIDと家族の人数を追加
+        df_concat['Family'] = df_concat['PassengerId'].apply(lambda x: x.split('_')[0])
+        family_counts = df_concat['Family'].value_counts()
+        df_concat['FamilySize'] = df_concat['Family'].apply(lambda x: family_counts[x])
+        df_concat['PassengerId'] = df_concat['PassengerId'].astype(int)
+        # self.continuous_columns.extend(['Family'])
+        self.continuous_columns.extend(['FamilySize'])
+
         
 
         # df_concat.drop('VIP', axis=1, inplace=True)
@@ -525,22 +546,22 @@ class V2(TabularDataFrame):
         df_concat['HomePlanet_Cabin_deck'] = df_concat['HomePlanet'] + df_concat['Cabin_deck']
         self.categorical_columns.extend(['HomePlanet_Cabin_deck'])
 
-        # # add特徴量
-        # df_concat['Cabin_deck_side'] = df_concat['Cabin_deck'] + df_concat['Cabin_side']
-        # self.categorical_columns.extend(['Cabin_deck_side'])
+        # add特徴量
+        df_concat['Cabin_deck_side'] = df_concat['Cabin_deck'] + df_concat['Cabin_side']
+        self.categorical_columns.extend(['Cabin_deck_side'])
 
         bins = [0, 16, 28, 36, 46, 58, 66, df_concat['Age'].max()+1]
         labels = ['0-16', '17-28', '29-36', '37-46', '47-58', '59-66', '67+']
         df_concat['Age_bin'] = pd.cut(df_concat['Age'], bins=bins, labels=labels, right=False)
         self.categorical_columns.extend(['Age_bin'])
 
-        # bins = [0, 320, 640, 800, 1180, 1500, 1820, 5000 ,df_concat['Cabin_num'].max()+1]
-        # labels = ['0-320', '320-640', '640-800', '800-1180', '1180-1500', '1500-1820', '1800-5000', '2000+']
-        # df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
-        # self.categorical_columns.extend(['Cabin_num_bin'])
+        bins = [0, 320, 640, 800, 1180, 1500, 1820, 2000 ,df_concat['Cabin_num'].max()+1]
+        labels = ['0-320', '320-640', '640-800', '800-1180', '1180-1500', '1500-1820', '1800-2000', '2000+']
+        df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
+        self.categorical_columns.extend(['Cabin_num_bin'])
 
         # bins = [0, 500, 1000, 1500, 2000, df_concat['Cabin_num'].max()+1]
-        # labels = ['0-500', '500-1000', '1000-1500', '1500-2000', '1180-1500', '1500-1820', '1800-5000', '2000+']
+        # labels = ['0-500', '500-1000', '1000-1500', '1500-2000', '2000+']
         # df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
         # self.categorical_columns.extend(['Cabin_num_bin'])
 
@@ -550,7 +571,7 @@ class V2(TabularDataFrame):
         # df_concat['HomePlanet_Destination'] = df_concat['HomePlanet'] + df_concat['Destination']
         # self.categorical_columns.extend(['HomePlanet_Destination'])
 
-        # # add特徴量
+        # add特徴量
         # df_concat['Cabin_deck_Destination'] = df_concat['Cabin_deck'] + df_concat['Destination']
         # self.categorical_columns.extend(['Cabin_deck_Destination'])
 
