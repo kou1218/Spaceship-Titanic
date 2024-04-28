@@ -98,7 +98,7 @@ class OptimParam:
         output_dim,
         X,
         y,
-        val_data,
+        # val_data,
         columns,
         target_column,
         n_trials,
@@ -117,7 +117,7 @@ class OptimParam:
         self.model_config = get_model_config(model_name)
         self.X = X
         self.y = y
-        self.val_data = val_data
+        # self.val_data = val_data
         self.columns = columns
         self.target_column = target_column
         self.n_trials = n_trials
@@ -130,9 +130,9 @@ class OptimParam:
         self.alpha = alpha
 
     def fit(self, model_config, X_train, y_train, X_val=None, y_val=None):
-        if X_val is None and y_val is None:
-            X_val = self.val_data[self.columns]
-            y_val = self.val_data[self.target_column].values.squeeze()
+        # if X_val is None and y_val is None:
+        #     X_val = self.val_data[self.columns]
+        #     y_val = self.val_data[self.target_column].values.squeeze()
 
         model = get_classifier(
             self.model_name,
@@ -148,9 +148,9 @@ class OptimParam:
             y_train,
             eval_set=(X_val, y_val),
         )
-        score = model.evaluate(
-            self.val_data[self.columns],
-            self.val_data[self.target_column].values.squeeze(),
+        score = model.evaluate(X_val, y_val
+        #     self.val_data[self.columns],
+        #     self.val_data[self.target_column].values.squeeze(),
         )
         return score
 

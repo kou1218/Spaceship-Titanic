@@ -151,9 +151,9 @@ class ExpOptuna(ExpBase):
                 print(f"delete successful in {i}")
             return
         # super().run()
-        train_data, val_data = train_test_split(self.train, test_size=0.2)
-        x, y = self.get_x_y(train_data)
-        print(self.get_model_config(1, x, y, val_data))
+        # train_data, val_data = train_test_split(self.train, test_size=0.2)
+        x, y = self.get_x_y(self.train)
+        print(self.get_model_config(1, x, y))
 
     def get_model_config(self, i_fold, x, y, val_data):
         op = OptimParam(
@@ -163,7 +163,7 @@ class ExpOptuna(ExpBase):
             output_dim=self.output_dim,
             X=x,
             y=y,
-            val_data=val_data,
+            # val_data=val_data,
             columns=self.columns,
             target_column=self.target_column,
             n_trials=self.n_trials,
