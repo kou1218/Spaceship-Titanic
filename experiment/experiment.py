@@ -113,7 +113,7 @@ class ExpBase:
         print(submit_df)
         submit_df.to_csv("submit.csv", index=False)
 
-        print('score_average', score_all/self.n_splits)
+        logger.info(f" {self.model_name} score average: {score_all/self.n_splits} ")
 
     def get_model_config(self, *args, **kwargs):
         raise NotImplementedError()
@@ -176,3 +176,191 @@ class ExpOptuna(ExpBase):
             seed=self.seed,
         )
         return op.get_best_config()
+
+class ExpStacking(ExpBase):
+    def __init__(self, config):
+        super().__init__(config)
+    
+    def run(self):
+        val_xgb = None
+        test_xgb = None
+
+        val_lgbm = None
+        test_lgbm = None
+
+        val_cat = None
+        test_cat = None
+
+        val_rf = None
+        test_rf = None
+
+        val_gb = None
+        test_gb = None
+
+        val_et = None
+        test_et = None
+
+        val_kn = None
+        test_kn = None
+
+        predict_columns = []
+
+        if self.exp_config.xgboost:
+            self.model_name = 'xgboost'
+            logger.info(f"Stacking {self.model_name} predict proba start! ")
+            val_xgb , test_xgb = self.stacking_predict()
+            predict_columns.append('xgb_True')
+            predict_columns.append('xgb_False')
+        if self.exp_config.lightgbm:
+            self.model_name = 'lightgbm'
+            logger.info(f"Stacking {self.model_name} predict proba start! ")
+            val_lgbm, test_lgbm = self.stacking_predict()
+            predict_columns.append('lgbm_True')
+            predict_columns.append('lgbm_False')
+        if self.exp_config.catboost:
+            self.model_name = 'catboost'
+            logger.info(f"Stacking {self.model_name} predict proba start! ")
+            val_cat, test_cat = self.stacking_predict()
+            predict_columns.append('cat_True')
+            predict_columns.append('cat_False')
+        if self.exp_config.randomforest:
+            self.model_name = 'randomforest'
+            logger.info(f"Stacking {self.model_name} predict proba start! ")
+            val_rf, test_rf = self.stacking_predict()
+            predict_columns.append('rf_True')
+            predict_columns.append('rf_False')
+        if self.exp_config.gradientboosting:
+            self.model_name = 'gradientboosting'
+            logger.info(f"Stacking {self.model_name} predict proba start! ")
+            val_gb, test_gb = self.stacking_predict()
+            predict_columns.append('gb_True')
+            predict_columns.append('gb_False')
+        if self.exp_config.extratrees:
+            self.model_name = 'extratrees'
+            logger.info(f"Stacking {self.model_name} predict proba start! ")
+            val_et, test_et = self.stacking_predict()
+            predict_columns.append('et_True')
+            predict_columns.append('et_False')
+        if self.exp_config.kneighbors:
+            self.model_name = 'kneighbors'
+            logger.info(f"Stacking {self.model_name} predict proba start! ")
+            val_kn, test_kn = self.stacking_predict()
+            predict_columns.append('kn_True')
+            predict_columns.append('kn_False')
+        
+        train_predict = np.concatenate([val for val in [val_xgb, val_lgbm, val_cat, val_rf, val_gb, val_et, val_kn] if val is not None], axis=1)
+        test_predict = np.concatenate([test for test in [test_xgb, test_lgbm, test_cat, test_rf, test_gb, test_et, test_kn] if test is not None], axis=1)
+
+        train_predict = pd.DataFrame(train_predict, columns=predict_columns)
+        train_predict = pd.concat([train_predict, self.train[self.target_column]], axis=1)
+
+        # predictの中身を見る場合は以下を実行
+        # train_predict.to_csv("train_predict.csv", index=False)
+
+        test_predict = pd.DataFrame(test_predict, columns=predict_columns)
+
+        # model_nameを2層目のモデル名に変更
+        self.model_name = 'xgboost2'
+        # カラム名を2層目用に変更
+        self.columns = predict_columns
+
+        skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=self.seed)
+        y_test_pred_all = []
+        score_all = 0
+        for i_fold, (train_idx, val_idx) in enumerate(skf.split(train_predict, train_predict[self.target_column])):
+
+            train_data, val_data = train_predict.iloc[train_idx], train_predict.iloc[val_idx]
+            model, time = self.each_fold(i_fold, train_data, val_data)
+
+            score = cal_metrics(model, val_data, self.columns, self.target_column)
+            score.update(model.evaluate(val_data[self.columns], val_data[self.target_column].values.squeeze()))
+            logger.info(
+                f"[{self.model_name} results ({i_fold+1} / {self.n_splits})] val/ACC: {score['ACC']:.4f} | val/AUC: {score['AUC']:.4f} | "
+                f"val/F1: {score['F1']}"
+            )
+
+            score_all += score["ACC"]
+
+            self.add_results(i_fold, score, time)
+
+            y_test_pred_all.append(
+                model.predict_proba(test_predict[self.columns]).reshape(-1, 1, len(self.label_encoder.classes_))
+            )
+        
+        y_test_pred_all = np.argmax(np.concatenate(y_test_pred_all, axis=1).mean(axis=1), axis=1)
+        submit_df = pd.DataFrame(self.id)
+        submit_df["Transported"] = self.label_encoder.inverse_transform(y_test_pred_all)
+        print(submit_df)
+        submit_df.to_csv("submit.csv", index=False)
+
+        logger.info(f" {self.model_name} score average: {score_all/self.n_splits} ")
+
+
+
+
+    def stacking_predict(self):
+        val_predict = np.zeros((self.train[self.columns].shape[0], self.output_dim))
+        test_predict = np.zeros((self.test[self.columns].shape[0], self.output_dim))
+        test_skf_predict = np.zeros((self.n_splits, self.test[self.columns].shape[0], self.output_dim))
+
+        skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=self.seed)
+        y_test_pred_all = []
+        score_all = 0
+        for i_fold, (train_idx, val_idx) in enumerate(skf.split(self.train, self.train[self.target_column])):
+
+            train_data, val_data = self.train.iloc[train_idx], self.train.iloc[val_idx]
+            model, time = self.each_fold(i_fold, train_data, val_data)
+
+            val_predict[val_idx] = model.predict_proba(val_data[self.columns])
+            test_skf_predict[i_fold, :] = model.predict_proba(self.test[self.columns])
+
+            score = cal_metrics(model, val_data, self.columns, self.target_column)
+            score.update(model.evaluate(val_data[self.columns], val_data[self.target_column].values.squeeze()))
+            logger.info(
+                f"[{self.model_name} results ({i_fold+1} / {self.n_splits})] val/ACC: {score['ACC']:.4f} | val/AUC: {score['AUC']:.4f} | "
+                f"val/F1: {score['F1']}"
+            )
+
+            score_all += score["ACC"]
+
+            self.add_results(i_fold, score, time)
+
+            y_test_pred_all.append(
+                model.predict_proba(self.test[self.columns]).reshape(-1, 1, len(self.label_encoder.classes_))
+            )
+        
+        test_predict[:] = test_skf_predict.mean(axis=0)
+
+        logger.info(f" {self.model_name} score average: {score_all/self.n_splits} ")
+
+        return val_predict, test_predict
+        # y_test_pred_all = np.argmax(np.concatenate(y_test_pred_all, axis=1).mean(axis=1), axis=1)
+
+
+        # submit_df = pd.DataFrame(self.id)
+        # submit_df["Transported"] = self.label_encoder.inverse_transform(y_test_pred_all)
+        # print(submit_df)
+        # submit_df.to_csv("submit.csv", index=False)
+
+        # print('score_average', score_all/self.n_splits)
+
+    def get_model_config(self, *args, **kwargs):
+        if self.model_name == 'xgboost':
+            return self.model_config.xgboost
+        elif self.model_name == 'lightgbm':
+            return self.model_config.lightgbm
+        elif self.model_name == 'catboost':
+            return self.model_config.catboost
+        elif self.model_name == 'randomforest':
+            return self.model_config.randomforest
+        elif self.model_name == 'gradientboosting':
+            return self.model_config.gradientboosting
+        elif self.model_name == 'extratrees':
+            return self.model_config.extratrees
+        elif self.model_name == 'kneighbors':
+            return self.model_config.kneighbors
+        # 2層目のモデル
+        elif self.model_name == 'xgboost2':
+            return self.model_config.xgboost2
+            
+        
