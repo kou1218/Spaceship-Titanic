@@ -1,0 +1,13 @@
+defaults: 
+  - base
+
+xgboost: True
+lightgbm: False
+catboost: True
+randomforest: True
+gradientboosting: True
+extratrees: True
+kneighbors: True
+
+name: ExpStacking
+
