@@ -22,6 +22,8 @@ def get_classifier(name, *, input_dim, output_dim, model_config, seed=42, verbos
         return ETClassifier(input_dim, output_dim, model_config, verbose)
     elif name == "kneighbors":
         return KNClassifier(input_dim, output_dim, model_config, verbose)
+    elif name == "xgboost2":
+        return XGBoostClassifier(input_dim, output_dim, model_config, verbose)
     # elif name == "xgblgbm":
     #     return XGBLGBMClassifier(input_dim, output_dim, model_config, verbose)
     # elif name == "xgb5lgbm5":
