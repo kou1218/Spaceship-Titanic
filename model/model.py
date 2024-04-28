@@ -11,6 +11,11 @@ from sklearn.metrics import (
 from .utils import f1_micro, f1_micro_lgb
 from .base_model import BaseClassifier
 
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.neighbors import KNeighborsClassifier
+
 class XGBoostClassifier(BaseClassifier):
     def __init__(self, input_dim, output_dim, model_config, verbose) -> None:
         super().__init__(input_dim, output_dim, model_config, verbose)
@@ -26,27 +31,9 @@ class XGBoostClassifier(BaseClassifier):
 
         self.model.fit(X, y, eval_set=[eval_set], verbose=self.verbose > 0)
         pass
-    
-    def predict_proba(self, X):
-        return self.model.predict_proba(X.values)
-
-    def predict(self, X):
-        return self.model.predict(X.values)
-
-    def evaluate(self, X, y):
-        y_pred = self.predict(X)
-        results = {}
-        results["ACC"] = accuracy_score(y, y_pred)
-        y_score = self.predict_proba(X)[:,1]
-        results["AUC"] = roc_auc_score(y, y_score)
-        results["Precision"] = precision_score(y, y_pred, average="micro", zero_division=0)
-        results["Recall"] = recall_score(y, y_pred, average="micro", zero_division=0)
-        results["Specificity"] = recall_score(1 - y, 1 - y_pred, average="micro", zero_division=0)
-        results["F1"] = f1_score(y, y_pred, average="micro", zero_division=0)
-        return results
 
 class LightGBMClassifier(BaseClassifier):
-    def __init__(self, input_dim, output_dim, model_config, verbose, seed=None) -> None:
+    def __init__(self, input_dim, output_dim, model_config, verbose, seed=42) -> None:
         super().__init__(input_dim, output_dim, model_config, verbose)
 
         self.model = lgb.LGBMClassifier(
@@ -66,31 +53,13 @@ class LightGBMClassifier(BaseClassifier):
             # eval_metric=f1_micro_lgb,
             callbacks=[lgb.early_stopping(stopping_rounds=50, verbose=self.verbose > 0)],
         )
-    
-    def predict_proba(self, X):
-        return self.model.predict_proba(X.values)
-
-    def predict(self, X):
-        return self.model.predict(X.values)
-
-    def evaluate(self, X, y):
-        y_pred = self.predict(X)
-        results = {}
-        results["ACC"] = accuracy_score(y, y_pred)
-        y_score = self.predict_proba(X)[:,1]
-        results["AUC"] = roc_auc_score(y, y_score)
-        results["Precision"] = precision_score(y, y_pred, average="micro", zero_division=0)
-        results["Recall"] = recall_score(y, y_pred, average="micro", zero_division=0)
-        results["Specificity"] = recall_score(1 - y, 1 - y_pred, average="micro", zero_division=0)
-        results["F1"] = f1_score(y, y_pred, average="micro", zero_division=0)
-        return results
 
 class CBTClassifier(BaseClassifier):
-    def __init__(self, input_dim, output_dim, model_config, verbose, seed=None) -> None:
+    def __init__(self, input_dim, output_dim, model_config, verbose, seed=42) -> None:
         super().__init__(input_dim, output_dim, model_config, verbose)
 
         self.model = cbt.CatBoostClassifier(
-            custom_loss=['Accuracy'],
+            loss_function="Logloss",
             verbose=self.verbose,
             random_seed=seed,
             **self.model_config,
@@ -105,21 +74,64 @@ class CBTClassifier(BaseClassifier):
             eval_set=[eval_set],
             # eval_metric=f1_micro_lgb,
         )
-    
-    def predict_proba(self, X):
-        return self.model.predict_proba(X.values)
 
-    def predict(self, X):
-        return self.model.predict(X.values)
+class RFClassifier(BaseClassifier):
+    def __init__(self, input_dim, output_dim, model_config, verbose, seed=42) -> None:
+        super().__init__(input_dim, output_dim, model_config, verbose)
 
-    def evaluate(self, X, y):
-        y_pred = self.predict(X)
-        results = {}
-        results["ACC"] = accuracy_score(y, y_pred)
-        y_score = self.predict_proba(X)[:,1]
-        results["AUC"] = roc_auc_score(y, y_score)
-        results["Precision"] = precision_score(y, y_pred, average="micro", zero_division=0)
-        results["Recall"] = recall_score(y, y_pred, average="micro", zero_division=0)
-        results["Specificity"] = recall_score(1 - y, 1 - y_pred, average="micro", zero_division=0)
-        results["F1"] = f1_score(y, y_pred, average="micro", zero_division=0)
-        return results
+        self.model = RandomForestClassifier(
+            verbose=self.verbose,
+            random_state=seed,
+            **self.model_config,
+        )
+
+    def fit(self, X, y, eval_set):
+        self._column_names = X.columns
+
+        self.model.fit(X, y)
+
+# 勾配ブースト分類器
+class GBClassifier(BaseClassifier):
+    def __init__(self, input_dim, output_dim, model_config, verbose, seed=42) -> None:
+        super().__init__(input_dim, output_dim, model_config, verbose)
+
+        self.model = GradientBoostingClassifier(
+            verbose=self.verbose,
+            random_state=seed,
+            **self.model_config,
+        )
+
+    def fit(self, X, y, eval_set):
+        self._column_names = X.columns
+
+        self.model.fit(X, y)
+
+# ランダムフォレスト分類器の拡張版
+class ETClassifier(BaseClassifier):
+    def __init__(self, input_dim, output_dim, model_config, verbose, seed=42) -> None:
+        super().__init__(input_dim, output_dim, model_config, verbose)
+
+        self.model = ExtraTreesClassifier(
+            verbose=self.verbose,
+            random_state=seed,
+            **self.model_config,
+        )
+
+    def fit(self, X, y, eval_set):
+        self._column_names = X.columns
+
+        self.model.fit(X, y)
+
+# k 近傍法分類器
+class KNClassifier(BaseClassifier):
+    def __init__(self, input_dim, output_dim, model_config, verbose, seed=42) -> None:
+        super().__init__(input_dim, output_dim, model_config, verbose)
+
+        self.model = KNeighborsClassifier(
+            **self.model_config,
+        )
+
+    def fit(self, X, y, eval_set):
+        self._column_names = X.columns
+
+        self.model.fit(X, y)

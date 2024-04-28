@@ -1,0 +1,56 @@
+xgboost:
+  max_depth: 6
+  n_estimators: 100000
+  eta: null
+  min_child_weight: null
+  subsample: null
+  colsample_bytree: null
+  colsample_bylevel: null
+  gamma: null
+  alpha: null
+  lambda: null
+
+lightgbm:
+  n_estimators: 100000
+  learning_rate: 0.1
+
+catboost:
+  depth: 5
+  n_estimators: 2881
+  learning_rate: 0.005169879442298541
+  early_stopping_rounds: 18
+  l2_leaf_reg: 9
+  random_strength: 1.6709557931179373
+  rsm: 0.9868869366005173
+
+randomforest:
+  n_estimators: 100
+  max_depth: null
+  max_features: null
+  # min_samples_split: null
+  # min_samples_leaf: null
+
+gradientboosting:
+  n_estimators: 50
+  # learning_rate: null
+  max_depth: 6
+
+extratrees:
+  n_estimators: 50
+  max_depth: 6
+  # min_samples_split: null
+
+kneighbors:
+  n_neighbors: 8
+
+xgboost2:
+  max_depth: 6
+  n_estimators: 100000
+  eta: null
+  min_child_weight: null
+  subsample: null
+  colsample_bytree: null
+  colsample_bylevel: null
+  gamma: null
+  alpha: null
+  lambda: null
