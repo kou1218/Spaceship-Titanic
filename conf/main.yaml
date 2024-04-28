@@ -11,7 +11,7 @@ defaults:
   - model: catboost
   - exp: simple
 
-n_splits: 15
+n_splits: 5
 metrics: F1
 
 seed: 42
