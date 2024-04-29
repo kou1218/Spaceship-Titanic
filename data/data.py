@@ -550,6 +550,10 @@ class V2(TabularDataFrame):
         df_concat['Cabin_deck_side'] = df_concat['Cabin_deck'] + df_concat['Cabin_side']
         self.categorical_columns.extend(['Cabin_deck_side'])
 
+        # add特徴量
+        df_concat['HomePlanet_VIP'] = df_concat['HomePlanet'] * df_concat['VIP']
+        self.categorical_columns.extend(['HomePlanet_VIP'])
+
         bins = [0, 16, 28, 36, 46, 58, 66, df_concat['Age'].max()+1]
         labels = ['0-16', '17-28', '29-36', '37-46', '47-58', '59-66', '67+']
         df_concat['Age_bin'] = pd.cut(df_concat['Age'], bins=bins, labels=labels, right=False)
