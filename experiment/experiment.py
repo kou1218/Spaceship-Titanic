@@ -209,44 +209,44 @@ class ExpStacking(ExpBase):
             self.model_name = 'xgboost'
             logger.info(f"Stacking {self.model_name} predict proba start! ")
             val_xgb , test_xgb = self.stacking_predict()
-            predict_columns.append('xgb_True')
             predict_columns.append('xgb_False')
+            predict_columns.append('xgb_True')
         if self.exp_config.lightgbm:
             self.model_name = 'lightgbm'
             logger.info(f"Stacking {self.model_name} predict proba start! ")
             val_lgbm, test_lgbm = self.stacking_predict()
-            predict_columns.append('lgbm_True')
             predict_columns.append('lgbm_False')
+            predict_columns.append('lgbm_True')
         if self.exp_config.catboost:
             self.model_name = 'catboost'
             logger.info(f"Stacking {self.model_name} predict proba start! ")
             val_cat, test_cat = self.stacking_predict()
-            predict_columns.append('cat_True')
             predict_columns.append('cat_False')
+            predict_columns.append('cat_True')
         if self.exp_config.randomforest:
             self.model_name = 'randomforest'
             logger.info(f"Stacking {self.model_name} predict proba start! ")
             val_rf, test_rf = self.stacking_predict()
-            predict_columns.append('rf_True')
             predict_columns.append('rf_False')
+            predict_columns.append('rf_True')
         if self.exp_config.gradientboosting:
             self.model_name = 'gradientboosting'
             logger.info(f"Stacking {self.model_name} predict proba start! ")
             val_gb, test_gb = self.stacking_predict()
-            predict_columns.append('gb_True')
             predict_columns.append('gb_False')
+            predict_columns.append('gb_True')
         if self.exp_config.extratrees:
             self.model_name = 'extratrees'
             logger.info(f"Stacking {self.model_name} predict proba start! ")
             val_et, test_et = self.stacking_predict()
-            predict_columns.append('et_True')
             predict_columns.append('et_False')
+            predict_columns.append('et_True')
         if self.exp_config.kneighbors:
             self.model_name = 'kneighbors'
             logger.info(f"Stacking {self.model_name} predict proba start! ")
             val_kn, test_kn = self.stacking_predict()
-            predict_columns.append('kn_True')
             predict_columns.append('kn_False')
+            predict_columns.append('kn_True')
         
         train_predict = np.concatenate([val for val in [val_xgb, val_lgbm, val_cat, val_rf, val_gb, val_et, val_kn] if val is not None], axis=1)
         test_predict = np.concatenate([test for test in [test_xgb, test_lgbm, test_cat, test_rf, test_gb, test_et, test_kn] if test is not None], axis=1)
@@ -254,15 +254,26 @@ class ExpStacking(ExpBase):
         train_predict = pd.DataFrame(train_predict, columns=predict_columns)
         train_predict = pd.concat([train_predict, self.train[self.target_column]], axis=1)
 
-        # predictの中身を見る場合は以下を実行
-        # train_predict.to_csv("train_predict.csv", index=False)
-
         test_predict = pd.DataFrame(test_predict, columns=predict_columns)
+
+        if self.exp_config.drop_False:
+            # 条件に合致するカラムを抽出
+            columns_to_drop = [col for col in predict_columns if col.endswith("_False")]
+            # カラムを削除
+            train_predict.drop(columns_to_drop, axis=1, inplace=True)
+            test_predict.drop(columns_to_drop, axis=1, inplace=True)
+
+        # predictの中身を見る場合は以下を実行
+        train_predict.to_csv("train_predict.csv", index=False)
+        test_predict.to_csv("test_predict.csv", index=False)
 
         # model_nameを2層目のモデル名に変更
         self.model_name = 'xgboost2'
         # カラム名を2層目用に変更
-        self.columns = predict_columns
+        self.columns = test_predict.columns
+        print(self.columns)
+        exit()
+
 
         skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=self.seed)
         y_test_pred_all = []
