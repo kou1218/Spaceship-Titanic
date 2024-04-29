@@ -9,5 +9,7 @@ gradientboosting: True
 extratrees: True
 kneighbors: True
 
+drop_False: True
+
 name: ExpStacking
 
