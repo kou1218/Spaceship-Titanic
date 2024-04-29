@@ -488,7 +488,7 @@ class V2(TabularDataFrame):
         df_concat['FamilySize'] = df_concat['Family'].apply(lambda x: family_counts[x])
         df_concat['PassengerId'] = df_concat['PassengerId'].astype(int)
         # self.continuous_columns.extend(['Family'])
-        self.continuous_columns.extend(['FamilySize'])
+        self.categorical_columns.extend(['FamilySize'])
 
         
 
@@ -554,16 +554,24 @@ class V2(TabularDataFrame):
         labels = ['0-16', '17-28', '29-36', '37-46', '47-58', '59-66', '67+']
         df_concat['Age_bin'] = pd.cut(df_concat['Age'], bins=bins, labels=labels, right=False)
         self.categorical_columns.extend(['Age_bin'])
+        df_concat.drop('Age', axis=1, inplace=True)
+        self.continuous_columns = [col for col in self.continuous_columns if col !='Age']
 
         bins = [0, 320, 640, 800, 1180, 1500, 1820, 2000 ,df_concat['Cabin_num'].max()+1]
         labels = ['0-320', '320-640', '640-800', '800-1180', '1180-1500', '1500-1820', '1800-2000', '2000+']
         df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
         self.categorical_columns.extend(['Cabin_num_bin'])
+        df_concat.drop('Cabin_num', axis=1, inplace=True)
+        self.continuous_columns = [col for col in self.continuous_columns if col !='Cabin_num']
 
         # bins = [0, 500, 1000, 1500, 2000, df_concat['Cabin_num'].max()+1]
         # labels = ['0-500', '500-1000', '1000-1500', '1500-2000', '2000+']
         # df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
         # self.categorical_columns.extend(['Cabin_num_bin'])
+
+        # add特徴量
+        df_concat['Destination_CryoSleep'] = df_concat['Destination'] * df_concat['CryoSleep']
+        self.categorical_columns.extend(['Destination_CryoSleep'])
 
 
         # cvは上がるが提出時下がる
