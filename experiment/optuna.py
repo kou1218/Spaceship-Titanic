@@ -38,12 +38,15 @@ def catboost_config(trial: optuna.Trial, model_config, name=""):
     return model_config
 
 def randomforest_config(trial: optuna.Trial, model_config, name=""):
-    model_config.n_estimators = trial.suggest_int("n_estimators", 10, 10000)
-    model_config.max_depth = trial.suggest_int("max_depth", 2, 100)
+    model_config.n_estimators = trial.suggest_int("n_estimators", 50, 1000)
+    # model_config.max_depth = trial.suggest_int("max_depth", 2, 100)
     model_config.max_features = trial.suggest_float('max_features', 0, 1.0)
-    model_config.max_leaf_nodes = trial.suggest_int('max_leaf_nodes', 1, 1000)
-    model_config.min_samples_split = trial.suggest_int('min_samples_split', 2, 5)
-    model_config.min_samples_leaf = trial.suggest_int('min_samples_leaf', 1, 10)
+    # model_config.max_leaf_nodes = trial.suggest_int('max_leaf_nodes', 1, 1000)
+    model_config.min_samples_split = trial.suggest_int('min_samples_split', 2, 20)
+    model_config.min_samples_leaf = trial.suggest_int('min_samples_leaf', 1, 20)
+    model_config.criterion = trial.suggest_categorical("criterion", ['gini', 'entropy', 'log_loss'])
+    model_config.bootstrap = trial.suggest_categorical("bootstrap", [True, False])
+    model_config.oob_score = trial.suggest_categorical("oob_score", [False])
     return model_config
 
 def gradientboosting_config(trial: optuna.Trial, model_config, name=""):
