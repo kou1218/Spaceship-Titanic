@@ -1,5 +1,17 @@
-n_estimators: 100
-max_depth: null
-max_features: null
+# n_estimators: 100
+# # max_depth: null
+# max_features: null
 # min_samples_split: null
 # min_samples_leaf: null
+# criterion: null
+# bootstrap: null
+# oob_score: null
+
+# 100optuna
+n_estimators: 431
+max_features: 0.17657978260693594
+min_samples_split: 18
+min_samples_leaf: 3
+criterion: entropy
+bootstrap: True
+oob_score: False

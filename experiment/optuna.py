@@ -13,37 +13,46 @@ logger = logging.getLogger(__name__)
 
 
 def xgboost_config(trial: optuna.Trial, model_config, name=""):
-    model_config.max_depth = trial.suggest_int("max_depth", 3, 10)
+    model_config.max_depth = trial.suggest_int("max_depth", 1, 20)
     model_config.eta = trial.suggest_float("eta", 1e-5, 1.0, log=True)
-    model_config.min_child_weight = trial.suggest_float("min_child_weight", 1e-8, 1e5, log=True)
-    model_config.subsample = trial.suggest_float("subsample", 0.5, 1.0)
-    model_config.colsample_bytree = trial.suggest_float("colsample_bytree", 0.5, 1.0)
-    model_config.colsample_bylevel = trial.suggest_float("colsample_bylevel", 0.5, 1.0)
-    model_config.gamma = trial.suggest_float("gamma", 1e-8, 1e2, log=True)
-    model_config.alpha = trial.suggest_float("alpha", 1e-8, 1e2, log=True)
-    model_config["lambda"] = trial.suggest_float("lambda", 1e-8, 1e2, log=True)
+    model_config.min_child_weight = trial.suggest_float("min_child_weight", 1, 10, log=True)
+    model_config.subsample = trial.suggest_float("subsample", 0.01, 1.0)
+    model_config.colsample_bytree = trial.suggest_float("colsample_bytree", 0.01, 1.0)
+    model_config.colsample_bylevel = trial.suggest_float("colsample_bylevel", 0.01, 1.0)
+    model_config.gamma = trial.suggest_float("gamma", 1e-8, 1.0, log=True)
+    model_config.alpha = trial.suggest_float("alpha", 1e-8, 1.0, log=True)
+    model_config["lambda"] = trial.suggest_float("lambda", 1e-8, 1.0, log=True)
+    model_config.booster = trial.suggest_categorical('booster', ['gbtree'])
+    model_config.n_estimators = trial.suggest_int('n_estimators', 100, 5000)
+    model_config.eval_metric = trial.suggest_categorical('eval_metric', ['mlogloss'])
     return model_config
 
 def lightgbm_config(trial: optuna.Trial, model_config, name=""):
     ...
 
 def catboost_config(trial: optuna.Trial, model_config, name=""):
-    model_config.depth = trial.suggest_int("depth", 3, 10)
+    model_config.depth = trial.suggest_int("depth", 1, 5)
     model_config.n_estimators = trial.suggest_int("n_estimators", 100, 10000)
-    model_config.learning_rate = trial.suggest_float("learning_rate", 1e-5, 1.0, log=True)
+    model_config.learning_rate = trial.suggest_float("learning_rate", 0.01, 1.0, log=True)
     model_config.early_stopping_rounds = trial.suggest_int("early_stopping_rounds", 5, 100)
-    model_config.l2_leaf_reg = trial.suggest_int("l2_leaf_reg", 1, 10)
-    model_config.random_strength = trial.suggest_float("random_strength", 1.0, 10.0)
+    model_config.l2_leaf_reg = trial.suggest_int("l2_leaf_reg", 1e-8, 100)
+    model_config.random_strength = trial.suggest_float("random_strength", 1e-8, 10.0)
     model_config.rsm = trial.suggest_float("rsm", 0.0, 1.0)
+    model_config.bootstrap_type = trial.suggest_categorical("bootstrap_type", ["Bayesian"])
+    model_config.bagging_temperature = trial.suggest_float("bagging_temperature", 0.0, 10.0)
+    model_config.od_type = trial.suggest_categorical("od_type", ["IncToDec", "Iter"])
     return model_config
 
 def randomforest_config(trial: optuna.Trial, model_config, name=""):
-    model_config.n_estimators = trial.suggest_int("n_estimators", 10, 10000)
-    model_config.max_depth = trial.suggest_int("max_depth", 2, 100)
+    model_config.n_estimators = trial.suggest_int("n_estimators", 50, 1000)
+    # model_config.max_depth = trial.suggest_int("max_depth", 2, 100)
     model_config.max_features = trial.suggest_float('max_features', 0, 1.0)
-    model_config.max_leaf_nodes = trial.suggest_int('max_leaf_nodes', 1, 1000)
-    model_config.min_samples_split = trial.suggest_int('min_samples_split', 2, 5)
-    model_config.min_samples_leaf = trial.suggest_int('min_samples_leaf', 1, 10)
+    # model_config.max_leaf_nodes = trial.suggest_int('max_leaf_nodes', 1, 1000)
+    model_config.min_samples_split = trial.suggest_int('min_samples_split', 2, 20)
+    model_config.min_samples_leaf = trial.suggest_int('min_samples_leaf', 1, 20)
+    model_config.criterion = trial.suggest_categorical("criterion", ['gini', 'entropy', 'log_loss'])
+    model_config.bootstrap = trial.suggest_categorical("bootstrap", [True, False])
+    model_config.oob_score = trial.suggest_categorical("oob_score", [False])
     return model_config
 
 def gradientboosting_config(trial: optuna.Trial, model_config, name=""):

@@ -81,6 +81,7 @@ class ExpBase:
         return model, end
     
     def run(self):
+        self.train.to_csv("train.csv")
         skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=self.seed)
         y_test_pred_all = []
         score_all = 0
