@@ -574,9 +574,9 @@ class V2(TabularDataFrame):
         # df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
         # self.categorical_columns.extend(['Cabin_num_bin'])
 
-        # add特徴量
-        df_concat['Destination_CryoSleep'] = df_concat['Destination'] * df_concat['CryoSleep']
-        self.categorical_columns.extend(['Destination_CryoSleep'])
+        # # add特徴量
+        # df_concat['Destination_CryoSleep'] = df_concat['Destination'] * df_concat['CryoSleep']
+        # self.categorical_columns.extend(['Destination_CryoSleep'])
 
 
         # cvは上がるが提出時下がる
