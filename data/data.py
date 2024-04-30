@@ -13,7 +13,8 @@ from sklearn.preprocessing import (
 )
 from sklearn.impute import SimpleImputer
 
-from .utils import feature_name_combiner
+# from .utils import feature_name_combiner
+from .utils import custom_name_combiner
 
 logger = logging.getLogger(__name__)
 
@@ -110,9 +111,9 @@ class TabularDataFrame(object):
             elif self.categorical_encoder == "onehot":
                 self._categorical_encoder = OneHotEncoder(
                     handle_unknown='error', 
-                    drop='first',
+                    drop='if_binary',
                     sparse_output=False,
-                    feature_name_combiner=feature_name_combiner,
+                    feature_name_combiner=custom_name_combiner,
                     dtype=np.int32,
                 ).fit(self.data_cate)
             else:
