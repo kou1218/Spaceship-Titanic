@@ -156,7 +156,11 @@ class ExpOptuna(ExpBase):
         x, y = self.get_x_y(self.train)
         print(self.get_model_config(1, x, y))
 
+<<<<<<< HEAD
     def get_model_config(self, i_fold, x, y):
+=======
+    def get_model_config(self, i_fold, x, y):#val_data
+>>>>>>> main
         op = OptimParam(
             self.model_name,
             default_config=self.model_config,
