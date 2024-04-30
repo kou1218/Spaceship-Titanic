@@ -1,13 +1,29 @@
-max_depth: 6
-n_estimators: 10000
-eta: null
-min_child_weight: null
-subsample: null
-colsample_bytree: null
-colsample_bylevel: null
-gamma: null
-alpha: null
-lambda: null
+# max_depth: null
+# n_estimators: null
+# eta: null
+# min_child_weight: null
+# subsample: null
+# colsample_bytree: null
+# colsample_bylevel: null
+# gamma: null
+# alpha: null
+# lambda: null
+# booster: null
+# eval_metric: null
+
+# 100optuna
+max_depth: 7
+n_estimators: 3957
+eta: 0.020342658738513788
+min_child_weight: 2.549520804106521
+subsample: 0.37870439709566767
+colsample_bytree: 0.25083683039001337
+colsample_bylevel: 0.36284821717465204
+gamma: 1.549212381257043e-06
+alpha: 1.629237545583275e-06
+lambda: 2.5219136349107154e-07
+booster: gbtree
+eval_metric: mlogloss
 
 # max_depth: 7
 # n_estimators: 10000

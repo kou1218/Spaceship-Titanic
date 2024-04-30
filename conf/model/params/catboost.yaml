@@ -6,11 +6,35 @@
 # random_strength: null
 # rsm: null
 
-# optuna100trial
-depth: 5
-n_estimators: 2881
-learning_rate: 0.005169879442298541
-early_stopping_rounds: 18
-l2_leaf_reg: 9
-random_strength: 1.6709557931179373
-rsm: 0.9868869366005173
+# # optuna100trial
+# depth: 5
+# n_estimators: 2881
+# learning_rate: 0.005169879442298541
+# early_stopping_rounds: 18
+# l2_leaf_reg: 9
+# random_strength: 1.6709557931179373
+# rsm: 0.9868869366005173
+
+
+depth: null
+n_estimators: 10000
+learning_rate: null
+early_stopping_rounds: null
+l2_leaf_reg: null
+random_strength: null
+rsm: null
+bootstrap_type: null
+bagging_temperature: null
+od_type: null
+
+# # optuna100trial
+# depth: 2
+# n_estimators: 9118
+# learning_rate: 0.057956950156292486
+# early_stopping_rounds: 71
+# l2_leaf_reg: 54
+# random_strength: 7.134309870292441
+# rsm: 0.38407871617528444
+# bootstrap_type: Bayesian
+# bagging_temperature: 1.1379614196825982
+# od_type: IncToDec
