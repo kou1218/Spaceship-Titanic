@@ -15,13 +15,13 @@ lightgbm:
   learning_rate: 0.1
 
 catboost:
-  depth: 5
-  n_estimators: 2881
-  learning_rate: 0.005169879442298541
-  early_stopping_rounds: 18
-  l2_leaf_reg: 9
-  random_strength: 1.6709557931179373
-  rsm: 0.9868869366005173
+  depth: null
+  n_estimators: 10000
+  learning_rate: null
+  early_stopping_rounds: 500
+  l2_leaf_reg: null
+  random_strength: null
+  rsm: null
 
 randomforest:
   n_estimators: 100
