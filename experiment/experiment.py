@@ -151,12 +151,12 @@ class ExpOptuna(ExpBase):
                 )
                 print(f"delete successful in {i}")
             return
-        # super().run()
+        super().run()
         # train_data, val_data = train_test_split(self.train, test_size=0.2)
-        x, y = self.get_x_y(self.train)
-        print(self.get_model_config(1, x, y))
+        # x, y = self.get_x_y(self.train)
+        # print(self.get_model_config(1, x, y))
 
-    def get_model_config(self, i_fold, x, y):#val_data
+    def get_model_config(self, i_fold, x, y, val_data):
         op = OptimParam(
             self.model_name,
             default_config=self.model_config,
@@ -164,14 +164,14 @@ class ExpOptuna(ExpBase):
             output_dim=self.output_dim,
             X=x,
             y=y,
-            # val_data=val_data,
+            val_data=val_data,
             columns=self.columns,
             target_column=self.target_column,
             n_trials=self.n_trials,
             n_startup_trials=self.n_startup_trials,
             storage=self.storage,
-            # study_name=f"{self.study_name}_{i_fold}",
-            study_name=f"{self.study_name}",
+            study_name=f"{self.study_name}_{i_fold}",
+            # study_name=f"{self.study_name}",
             cv=self.cv,
             n_jobs=self.n_jobs,
             seed=self.seed,
