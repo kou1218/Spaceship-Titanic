@@ -1,0 +1,4 @@
+defaults:
+  - params: catboost_optuna
+
+name: catboost_optuna
