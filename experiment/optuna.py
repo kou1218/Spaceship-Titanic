@@ -31,10 +31,10 @@ def lightgbm_config(trial: optuna.Trial, model_config, name=""):
     ...
 
 def catboost_config(trial: optuna.Trial, model_config, name=""):
-    model_config.depth = trial.suggest_int("depth", 2, 10)
-    model_config.n_estimators = trial.suggest_int("n_estimators", 100, 10000)
+    model_config.depth = trial.suggest_int("depth", 4, 10)
+    model_config.n_estimators = trial.suggest_int("n_estimators", 100, 5000)
     model_config.learning_rate = trial.suggest_float("learning_rate", 0.01, 1.0, log=True)
-    model_config.early_stopping_rounds = trial.suggest_int("early_stopping_rounds", 5, 100)
+    model_config.early_stopping_rounds = trial.suggest_int("early_stopping_rounds", 5, 500)
     model_config.l2_leaf_reg = trial.suggest_int("l2_leaf_reg", 1e-8, 100)
     model_config.random_strength = trial.suggest_float("random_strength", 1e-8, 10.0)
     # model_config.rsm = trial.suggest_float("rsm", 0.0, 1.0)
@@ -107,7 +107,7 @@ class OptimParam:
         output_dim,
         X,
         y,
-        # val_data,
+        val_data,
         columns,
         target_column,
         n_trials,
@@ -126,7 +126,7 @@ class OptimParam:
         self.model_config = get_model_config(model_name)
         self.X = X
         self.y = y
-        # self.val_data = val_data
+        self.val_data = val_data
         self.columns = columns
         self.target_column = target_column
         self.n_trials = n_trials
@@ -139,9 +139,9 @@ class OptimParam:
         self.alpha = alpha
 
     def fit(self, model_config, X_train, y_train, X_val=None, y_val=None):
-        # if X_val is None and y_val is None:
-        #     X_val = self.val_data[self.columns]
-        #     y_val = self.val_data[self.target_column].values.squeeze()
+        if X_val is None and y_val is None:
+            X_val = self.val_data[self.columns]
+            y_val = self.val_data[self.target_column].values.squeeze()
 
         model = get_classifier(
             self.model_name,
@@ -157,14 +157,16 @@ class OptimParam:
             y_train,
             eval_set=(X_val, y_val),
         )
-        score = model.evaluate(X_val, y_val
-        #     self.val_data[self.columns],
-        #     self.val_data[self.target_column].values.squeeze(),
+        score = model.evaluate(
+            X_val,
+            y_val
+            # self.val_data[self.columns],
+            # self.val_data[self.target_column].values.squeeze(),
         )
         return score
 
     def cross_validation(self, model_config):
-        skf = StratifiedKFold(n_splits=5, random_state=self.seed, shuffle=True)
+        skf = StratifiedKFold(n_splits=10, random_state=self.seed, shuffle=True)
         ave_f1 = []
         for _, (train_idx, val_idx) in enumerate(skf.split(self.X, self.y)):
             X_train, y_train = self.X.iloc[train_idx], self.y[train_idx]
