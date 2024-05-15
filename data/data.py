@@ -520,13 +520,29 @@ class V2(TabularDataFrame):
     def add_new_feature(self) -> None:
         df_concat = pd.concat([self.train, self.test])
 
-        # add特徴量
-        df_concat['HomePlanet_CryoSleep'] = df_concat['HomePlanet'] * df_concat['CryoSleep']
-        self.categorical_columns.extend(['HomePlanet_CryoSleep'])
+        # # add特徴量
+        # df_concat['HomePlanet_CryoSleep'] = df_concat['HomePlanet'] * df_concat['CryoSleep']
+        # self.categorical_columns.extend(['HomePlanet_CryoSleep'])
 
         # add特徴量
         df_concat['TotalSpent'] = df_concat['RoomService'] + df_concat['FoodCourt'] + df_concat['ShoppingMall'] + df_concat['Spa'] + df_concat['VRDeck']
         self.continuous_columns.extend(['TotalSpent'])
+
+        # add特徴量
+        df_concat['Room_Spa_VR'] = df_concat['RoomService'] + df_concat['Spa'] + df_concat['VRDeck']
+        self.continuous_columns.extend(['Room_Spa_VR'])
+
+        # add特徴量
+        df_concat['Food_Shop'] = df_concat['ShoppingMall'] + df_concat['FoodCourt']
+        self.continuous_columns.extend(['Food_Shop'])
+
+        # bins = [0, 6000, 12000, 18000, 24000, 30000, df_concat['TotalSpent'].max()+1]
+        # labels = ['0-6000','6000-12000', '12000-18000', '18000-24000', '24000-30000', '30000+']
+        # df_concat['TotalSpent_bin'] = pd.cut(df_concat['TotalSpent'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['TotalSpent_bin'])
+        # df_concat.drop('TotalSpent', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='TotalSpent']
+
         # # vscode上で精度ギャン下がり
         # df_concat.drop('RoomService', axis=1, inplace=True)
         # self.continuous_columns = [col for col in self.continuous_columns if col !='RoomService']
@@ -539,13 +555,13 @@ class V2(TabularDataFrame):
         # df_concat.drop('VRDeck', axis=1, inplace=True)
         # self.continuous_columns = [col for col in self.continuous_columns if col !='VRDeck']
 
-        # add特徴量
-        df_concat['Cabin_deck_CryoSleep'] = df_concat['Cabin_deck'] * df_concat['CryoSleep']
-        self.categorical_columns.extend(['Cabin_deck_CryoSleep'])
+        # # add特徴量
+        # df_concat['Cabin_deck_CryoSleep'] = df_concat['Cabin_deck'] * df_concat['CryoSleep']
+        # self.categorical_columns.extend(['Cabin_deck_CryoSleep'])
 
-        # add特徴量
-        df_concat['HomePlanet_Cabin_deck'] = df_concat['HomePlanet'] + df_concat['Cabin_deck']
-        self.categorical_columns.extend(['HomePlanet_Cabin_deck'])
+        # # add特徴量c
+        # df_concat['HomePlanet_Cabin_deck'] = df_concat['HomePlanet'] + df_concat['Cabin_deck']
+        # self.categorical_columns.extend(['HomePlanet_Cabin_deck'])
 
         # # add特徴量
         # df_concat['Cabin_deck_side'] = df_concat['Cabin_deck'] + df_concat['Cabin_side']
@@ -555,28 +571,44 @@ class V2(TabularDataFrame):
         # df_concat['HomePlanet_VIP'] = df_concat['HomePlanet'] * df_concat['VIP']
         # self.categorical_columns.extend(['HomePlanet_VIP'])
 
-        bins = [0, 5, 16, 28, 36, 46, 58, 66, df_concat['Age'].max()+1]
-        labels = ['0-5','6-16', '17-28', '29-36', '37-46', '47-58', '59-66', '67+']
+        # bins = [0, 5, 16, 28, 36, 46, 58, 66, df_concat['Age'].max()+1]
+        # labels = ['0-5','6-16', '17-28', '29-36', '37-46', '47-58', '59-66', '67+']
+        # df_concat['Age_bin'] = pd.cut(df_concat['Age'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['Age_bin'])
+        # df_concat.drop('Age', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='Age']
+
+        # bins = [0, 13, 26, 39, 52, 65, df_concat['Age'].max()+1]
+        # labels = ['0-13','14-26', '27-39', '40-53', '54-65', '66+']
+        # df_concat['Age_bin'] = pd.cut(df_concat['Age'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['Age_bin'])
+        # df_concat.drop('Age', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='Age']
+
+        bins = [0, 5, 12, 18, 50, df_concat['Age'].max()+1]
+        labels = ['0-5','6-12', '13-18', '19-50', '51+']
         df_concat['Age_bin'] = pd.cut(df_concat['Age'], bins=bins, labels=labels, right=False)
         self.categorical_columns.extend(['Age_bin'])
         df_concat.drop('Age', axis=1, inplace=True)
         self.continuous_columns = [col for col in self.continuous_columns if col !='Age']
 
-        bins = [0, 320, 640, 800, 1180, 1500, 1820, 2000 ,df_concat['Cabin_num'].max()+1]
-        labels = ['0-320', '320-640', '640-800', '800-1180', '1180-1500', '1500-1820', '1800-2000', '2000+']
+        # bins = [0, 320, 640, 800, 1180, 1500, 1820, 2000 ,df_concat['Cabin_num'].max()+1]
+        # labels = ['0-320', '320-640', '640-800', '800-1180', '1180-1500', '1500-1820', '1800-2000', '2000+']
+        # df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['Cabin_num_bin'])
+        # df_concat.drop('Cabin_num', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='Cabin_num']
+
+        bins = [0, 300, 600, 900, 1200, 1500, 1800, 2100, df_concat['Cabin_num'].max()+1]
+        labels = ['0-300', '300-600', '600-900', '900-1200', '1200-1500', '1500-1800', '1800-2100', '2100+']
         df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
         self.categorical_columns.extend(['Cabin_num_bin'])
         df_concat.drop('Cabin_num', axis=1, inplace=True)
         self.continuous_columns = [col for col in self.continuous_columns if col !='Cabin_num']
 
-        # bins = [0, 500, 1000, 1500, 2000, df_concat['Cabin_num'].max()+1]
-        # labels = ['0-500', '500-1000', '1000-1500', '1500-2000', '2000+']
-        # df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
-        # self.categorical_columns.extend(['Cabin_num_bin'])
-
         # # add特徴量
-        # df_concat['Destination_CryoSleep'] = df_concat['Destination'] * df_concat['CryoSleep']
-        # self.categorical_columns.extend(['Destination_CryoSleep'])
+        # df_concat['Destination_TotalSpent'] = df_concat['Destination'] * df_concat['TotalSpent']
+        # self.categorical_columns.extend(['Destination_TotalSpent'])
 
 
         # cvは上がるが提出時下がる
