@@ -585,6 +585,45 @@ class V2(TabularDataFrame):
         # df_concat.drop('Age', axis=1, inplace=True)
         # self.continuous_columns = [col for col in self.continuous_columns if col !='Age']
 
+        # bins = [0, 286, 1719, 2005, 2578, 4011, df_concat['RoomService'].max()+1]
+        # labels = ['0-286','286-1719', '1719-2005', '2005-2578', '2578-4011', '4011+']
+        # df_concat['RoomService_bin'] = pd.cut(df_concat['RoomService'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['RoomService_bin'])
+        # df_concat.drop('RoomService', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='RoomService']
+
+        # bins = [0, 448, 1344, 3137, 4481, df_concat['Spa'].max()+1]
+        # labels = ['0-448','448-1344', '1344-3137', '3137-4481', '4481+']
+        # df_concat['Spa_bin'] = pd.cut(df_concat['Spa'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['Spa_bin'])
+        # df_concat.drop('Spa', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='Spa']
+
+        # bins = [0, 482, 1447, 2895, 3861, 4343, df_concat['VRDeck'].max()+1]
+        # labels = ['0-482','482-1447', '1447-2895', '2895-3861', '3861-4343', '4343+']
+        # df_concat['VRDeck_bin'] = pd.cut(df_concat['VRDeck'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['VRDeck_bin'])
+        # df_concat.drop('VRDeck', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='VRDeck']
+
+        
+        # bins = [0, 469, 1409, 1879, 2349, 3288, 5168,9396,10806, df_concat['ShoppingMall'].max()+1]
+        # labels = ['0-469','469-1409', '1409-1879', '1879-2349', '2349-3288', '3288-5168', '5168-9396', '9396-10806', '10806+']
+        # df_concat['ShoppingMall_bin'] = pd.cut(df_concat['ShoppingMall'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['ShoppingMall_bin'])
+        # df_concat.drop('ShoppingMall', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='ShoppingMall']
+
+        
+        # bins = [0, 596, 2385, 4173, 6558, 7155, 13117, 14310, 14906, 16695, 17291, df_concat['FoodCourt'].max()+1]
+        # labels = ['0-596','596-2385', '2385-4173', '4173-6558', '6558-7155', '7155-13117', '13117-14310', '14310-14906', '14906-16695', '16695-17291', '17291+']
+        # df_concat['FoodCourt_bin'] = pd.cut(df_concat['FoodCourt'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['FoodCourt_bin'])
+        # df_concat.drop('FoodCourt', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='FoodCourt']
+
+        
+
         bins = [0, 5, 12, 18, 50, df_concat['Age'].max()+1]
         labels = ['0-5','6-12', '13-18', '19-50', '51+']
         df_concat['Age_bin'] = pd.cut(df_concat['Age'], bins=bins, labels=labels, right=False)
@@ -630,6 +669,104 @@ class V2(TabularDataFrame):
         self.train = df_concat[:len(self.train)]
         self.test = df_concat[len(self.train):]
         self.test.drop(self.target_column, axis=1, inplace=True)
+
+
+class V3(object):
+    columns = [
+        'false1',
+        'true1',
+        'false2',
+        'true2',
+        'false3',
+        'true3',
+        'false4',
+        'true4',
+        'false5',
+        'true5',
+        'false6',
+        'true6',
+    ]
+    continuous_columns = [
+        'false1',
+        'true1',
+        'false2',
+        'true2',
+        'false3',
+        'true3',
+        'false4',
+        'true4',
+        'false5',
+        'true5',
+        'false6',
+        'true6',
+    ]
+    categorical_columns = []
+    binary_columns = []
+    target_column = "Transported"
+
+    def __init__(
+        self,
+        seed,
+        categorical_encoder="ordinal",
+        continuous_encoder: str = None,
+        **kwargs,
+    ) -> None:
+        """
+        Args:
+            root (str): Path to the root of datasets for saving/loading.
+            download (bool): If True, you must implement `self.download` method
+                in the child class. Defaults to False.
+        """
+        self.seed = seed
+        self.categorical_encoder = categorical_encoder
+        self.continuous_encoder = continuous_encoder
+
+        self.train = pd.read_csv(to_absolute_path("datasets/train_pred.csv"))
+        self.test = pd.read_csv(to_absolute_path("datasets/test_pred.csv"))
+        self.test_a = pd.read_csv(to_absolute_path("datasets/test.csv"))
+        self.id = self.test_a["PassengerId"]
+
+        self.train = self.train[self.columns + [self.target_column]]
+        self.test = self.test[self.columns]
+
+        self.label_encoder = LabelEncoder().fit(self.train[self.target_column])
+        self.train[self.target_column] = self.label_encoder.transform(self.train[self.target_column])
+
+    def get_classify_dataframe(self) -> Dict[str, pd.DataFrame]:
+        train = self.train
+        test = self.test
+        self.data_cate = pd.concat([train[self.categorical_columns], test[self.categorical_columns]])
+
+        # self.show_data_details(train, test)
+        classify_dfs = {
+            "train": train,
+            "test": test,
+        }
+        return classify_dfs
+
+  
+
+    def processed_dataframes(self) -> Dict[str, pd.DataFrame]:
+        """
+        Returns:
+            dict[str, DataFrame]: The value has the keys "train", "val" and "test".
+        """
+
+        dfs = self.get_classify_dataframe()
+        # preprocessing
+
+        self.all_columns = list(self.categorical_columns) + list(self.continuous_columns) + list(self.binary_columns)
+        return dfs
+
+    def get_categories_dict(self):
+        if not hasattr(self, "_categorical_encoder"):
+            return None
+
+        categories_dict: Dict[str, List[Any]] = {}
+        for categorical_column, categories in zip(self.categorical_columns, self._categorical_encoder.categories_):
+            categories_dict[categorical_column] = categories.tolist()
+
+        return categories_dict
 
         
     
