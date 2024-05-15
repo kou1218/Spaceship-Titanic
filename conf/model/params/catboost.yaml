@@ -19,13 +19,13 @@
 depth: null
 n_estimators: 10000
 learning_rate: null
-early_stopping_rounds: null
+early_stopping_rounds: 500
 l2_leaf_reg: null
 random_strength: null
-rsm: null
-bootstrap_type: null
-bagging_temperature: null
-od_type: null
+# rsm: null
+# bootstrap_type: null
+# bagging_temperature: null
+# od_type: null
 
 # # optuna100trial
 # depth: 2
