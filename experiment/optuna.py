@@ -31,12 +31,13 @@ def lightgbm_config(trial: optuna.Trial, model_config, name=""):
     ...
 
 def catboost_config(trial: optuna.Trial, model_config, name=""):
-    model_config.depth = trial.suggest_int("depth", 2, 10)
+    model_config.depth = trial.suggest_int("depth", 4, 10)
     # model_config.n_estimators = trial.suggest_int("n_estimators", 100, 5000)
-    model_config.learning_rate = trial.suggest_float("learning_rate", 1e-5, 1.0, log=True)
-    # model_config.early_stopping_rounds = 500
-    model_config.l2_leaf_reg = trial.suggest_int("l2_leaf_reg", 1, 10)
-    model_config.random_strength = trial.suggest_float("random_strength", 0, 10.0)
+    model_config.learning_rate = trial.suggest_float("learning_rate", 1e-3, 0.1)
+    model_config.early_stopping_rounds = trial.suggest_int("early_stopping_rounds", 50, 50)
+    bagging_temperature = trial.suggest_float("bagging_temperature", 0.0, 1.0)
+    # model_config.l2_leaf_reg = trial.suggest_int("l2_leaf_reg", 2, 10)
+    # model_config.random_strength = trial.suggest_float("random_strength", 0, 10.0)
     # model_config.rsm = trial.suggest_float("rsm", 0.0, 1.0)
     # model_config.bootstrap_type = trial.suggest_categorical("bootstrap_type", ["Bayesian"])
     # model_config.bagging_temperature = trial.suggest_float("bagging_temperature", 0.0, 10.0)
