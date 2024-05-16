@@ -1,1 +1,1 @@
-from .experiment import ExpBase,ExpSimple,ExpOptuna, ExpStacking
+from .experiment import ExpBase,ExpSimple,ExpOptuna, ExpStacking, ExpSimple_Optuna

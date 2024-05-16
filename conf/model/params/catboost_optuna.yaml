@@ -1,0 +1,99 @@
+catboost_0:
+  depth: 6
+  n_estimators: 10000
+  learning_rate: 0.039418827040854754
+  early_stopping_rounds: 500
+  bagging_temperature: 0.07064311434205772
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null
+
+catboost_1:
+  depth: 9
+  n_estimators: 10000
+  learning_rate: 0.08993152841507276
+  early_stopping_rounds: 500
+  bagging_temperature: 0.130666783000564
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null
+
+catboost_2:
+  depth: 6
+  n_estimators: 10000
+  learning_rate: 0.07205015911285009
+  early_stopping_rounds: 500
+  bagging_temperature: 0.7766794652996605
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null
+
+catboost_3:
+  depth: 7
+  n_estimators: 10000
+  learning_rate: 0.09227604330960373
+  early_stopping_rounds: 500
+  bagging_temperature: 0.7072738892444943
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null
+
+catboost_4:
+  depth: 7
+  n_estimators: 10000
+  learning_rate: 0.034341577454129024
+  early_stopping_rounds: 500
+  bagging_temperature: 0.501246084366721
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null
+
+catboost_5:
+  depth: 6
+  n_estimators: 10000
+  learning_rate: 0.08344467932788008
+  early_stopping_rounds: 500
+  bagging_temperature: 0.6880074230034964
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null
+
+catboost_6:
+  depth: 6
+  n_estimators: 10000
+  learning_rate: 0.060071882855366354
+  early_stopping_rounds: 500
+  bagging_temperature: 0.23949443030195683
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null
+
+catboost_7:
+  depth: 7
+  n_estimators: 10000
+  learning_rate: 0.022715451393942654
+  early_stopping_rounds: 500
+  bagging_temperature: 0.70484748969363
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null
+
+catboost_8:
+  depth: 5
+  n_estimators: 10000
+  learning_rate: 0.08358915692192251
+  early_stopping_rounds: 500
+  bagging_temperature: 0.30685560983589716
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null
+
+catboost_9:
+  depth: 5
+  n_estimators: 10000
+  learning_rate: 0.03111998205299424
+  early_stopping_rounds: 500
+  bagging_temperature: 0.5247564316322378
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null

@@ -1,15 +1,15 @@
 defaults: 
   - base
 
-xgboost: True
+xgboost: False
 lightgbm: False
 catboost: True
-randomforest: True
-gradientboosting: True
-extratrees: True
-kneighbors: True
+randomforest: False
+gradientboosting: False
+extratrees: False
+kneighbors: False
 
-drop_False: True
+drop_False: False
 
 name: ExpStacking
 

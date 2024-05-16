@@ -131,6 +131,33 @@ class ExpSimple(ExpBase):
     def get_model_config(self, *args, **kwargs):
         return self.model_config
 
+class ExpSimple_Optuna(ExpBase):
+    def __init__(self, config):
+        super().__init__(config)
+
+    def get_model_config(self, i_fold, x, y, val_data):
+        #catboost_optunaのパラメータの時のみ使用可能
+        if i_fold == 0:
+            return self.model_config.catboost_0
+        elif i_fold == 1:
+            return self.model_config.catboost_1
+        elif i_fold == 2:
+            return self.model_config.catboost_2
+        elif i_fold == 3:
+            return self.model_config.catboost_3
+        elif i_fold == 4:
+            return self.model_config.catboost_4
+        elif i_fold == 5:
+            return self.model_config.catboost_5
+        elif i_fold == 6:
+            return self.model_config.catboost_6
+        elif i_fold == 7:
+            return self.model_config.catboost_7
+        elif i_fold == 8:
+            return self.model_config.catboost_8
+        elif i_fold == 9:
+            return self.model_config.catboost_9      
+
 class ExpOptuna(ExpBase):
     def __init__(self, config):
         super().__init__(config)
@@ -265,8 +292,8 @@ class ExpStacking(ExpBase):
             test_predict.drop(columns_to_drop, axis=1, inplace=True)
 
         # predictの中身を見る場合は以下を実行
-        train_predict.to_csv("train_predict.csv", index=False)
-        test_predict.to_csv("test_predict.csv", index=False)
+        train_predict.to_csv("train_predict_lr0.001.csv", index=False)
+        test_predict.to_csv("test_predict_lr0.001.csv", index=False)
 
         # model_nameを2層目のモデル名に変更
         self.model_name = 'xgboost2'
