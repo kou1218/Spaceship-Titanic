@@ -18,13 +18,14 @@
 
 depth: null
 n_estimators: 10000
-learning_rate: null
+learning_rate: 0.019549356549743555
 early_stopping_rounds: 500
-l2_leaf_reg: null
-random_strength: null
+l2_leaf_reg: 6.238880563296214
+border_count: 113
+# random_strength: null
 # rsm: null
 # bootstrap_type: null
-# bagging_temperature: null
+# bagging_temperature: 0.4702216350557251
 # od_type: null
 
 # # optuna100trial
