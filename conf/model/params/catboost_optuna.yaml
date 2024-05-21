@@ -1,9 +1,36 @@
 catboost_0:
+  # depth: 6
+  # n_estimators: 10000
+  # learning_rate: 0.039418827040854754
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.07064311434205772
+  # # l2_leaf_reg: null
+  # # random_strength: null
+  # # rsm: null
+
+  # depth: 5
+  # n_estimators: 10000
+  # learning_rate: 0.015315109119573896
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.6733467046544347
+  # # l2_leaf_reg: null
+  # # random_strength: 2.1160455772208073
+  # # rsm: null
+
+  # depth: 5
+  # n_estimators: 10000
+  # learning_rate: 0.04673352603812357
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.3687071392704177
+  # # l2_leaf_reg: null
+  # # random_strength: null
+  # # rsm: null
+
   depth: 6
   n_estimators: 10000
-  learning_rate: 0.039418827040854754
+  learning_rate: 0.028900422212485222
   early_stopping_rounds: 500
-  bagging_temperature: 0.07064311434205772
+  bagging_temperature: 0.09890336747640013
   # l2_leaf_reg: null
   # random_strength: null
   # rsm: null
@@ -18,25 +45,76 @@ catboost_1:
   # random_strength: null
   # rsm: null
 
+  # depth: 7
+  # n_estimators: 10000
+  # learning_rate: 0.06132035417118697
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.27504063681238394
+  # # l2_leaf_reg: null
+  # # random_strength: 0.018616131360807753
+  # # rsm: null
+
+  # depth: 8
+  # n_estimators: 10000
+  # learning_rate: 0.020875944642665678
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.4095912175604279
+
 catboost_2:
-  depth: 6
+  # depth: 6
+  # n_estimators: 10000
+  # learning_rate: 0.07205015911285009
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.7766794652996605
+  # # l2_leaf_reg: null
+  # # random_strength: null
+  # # rsm: null
+
+  depth: 7
   n_estimators: 10000
-  learning_rate: 0.07205015911285009
+  learning_rate: 0.09709935065152706
   early_stopping_rounds: 500
-  bagging_temperature: 0.7766794652996605
+  bagging_temperature: 0.9773852604840395
+  # l2_leaf_reg: null
+  # random_strength: 0.08482154303649123
+  # rsm: null
+
+  # depth: 6
+  # n_estimators: 10000
+  # learning_rate: 0.03579771541143231
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.9065104799170072  
+
+catboost_3:
+  # depth: 7
+  # n_estimators: 10000
+  # learning_rate: 0.09227604330960373
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.7072738892444943
   # l2_leaf_reg: null
   # random_strength: null
   # rsm: null
 
-catboost_3:
+  # depth: 5
+  # n_estimators: 10000
+  # learning_rate: 0.06145237175718428
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.6796803973293342
+  # # l2_leaf_reg: null
+  # # random_strength: 8.343963925162557
+  # # rsm: null
+
   depth: 7
   n_estimators: 10000
-  learning_rate: 0.09227604330960373
+  learning_rate: 0.01036210091829879
   early_stopping_rounds: 500
-  bagging_temperature: 0.7072738892444943
-  # l2_leaf_reg: null
-  # random_strength: null
-  # rsm: null
+  bagging_temperature: 0.36274680606704846
+
+  # depth: 8
+  # n_estimators: 10000
+  # learning_rate: 0.384128854354978
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.3872522293646464
 
 catboost_4:
   depth: 7
@@ -48,52 +126,157 @@ catboost_4:
   # random_strength: null
   # rsm: null
 
+  # depth: 5
+  # n_estimators: 10000
+  # learning_rate: 0.014345401073525584
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.09786484880675184
+  # # l2_leaf_reg: null
+  # # random_strength: 3.9587763755669148
+  # # rsm: null
+
 catboost_5:
-  depth: 6
-  n_estimators: 10000
-  learning_rate: 0.08344467932788008
-  early_stopping_rounds: 500
-  bagging_temperature: 0.6880074230034964
+  # depth: 6
+  # n_estimators: 10000
+  # learning_rate: 0.08344467932788008
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.6880074230034964
   # l2_leaf_reg: null
   # random_strength: null
   # rsm: null
+
+  # depth: 4
+  # n_estimators: 10000
+  # learning_rate: 0.042861395747190736
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.2912291401980419
+  # # l2_leaf_reg: null
+  # # random_strength: 4.319450186421157
+  # # rsm: null
+
+  # depth: 5
+  # n_estimators: 10000
+  # learning_rate: 0.021259809305999015
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.9974698284809732
+
+  depth: 6
+  n_estimators: 10000
+  learning_rate: 0.02447369291840076
+  early_stopping_rounds: 500
+  bagging_temperature: 0.25502501625745444
 
 catboost_6:
+  # depth: 6
+  # n_estimators: 10000
+  # learning_rate: 0.060071882855366354
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.23949443030195683
+  # l2_leaf_reg: null
+  # random_strength: null
+  # rsm: null
+
+  # depth: 6
+  # n_estimators: 10000
+  # learning_rate: 0.12448918446337819
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.5142344384136116
+  # # l2_leaf_reg: null
+  # # random_strength: 1.9967378215835974
+  # # rsm: null
+
+  # depth: 7
+  # n_estimators: 10000
+  # learning_rate: 0.012385137298860933
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.17052412368729153
+
   depth: 6
   n_estimators: 10000
-  learning_rate: 0.060071882855366354
+  learning_rate: 0.07295580469565963
   early_stopping_rounds: 500
-  bagging_temperature: 0.23949443030195683
-  # l2_leaf_reg: null
-  # random_strength: null
-  # rsm: null
+  bagging_temperature: 0.4541634409667397
 
 catboost_7:
-  depth: 7
-  n_estimators: 10000
-  learning_rate: 0.022715451393942654
-  early_stopping_rounds: 500
-  bagging_temperature: 0.70484748969363
+  # depth: 7
+  # n_estimators: 10000
+  # learning_rate: 0.022715451393942654
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.70484748969363
   # l2_leaf_reg: null
   # random_strength: null
   # rsm: null
+
+  # depth: 7
+  # n_estimators: 10000
+  # learning_rate: 0.1148585461089405
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.556447219952782
+  # # l2_leaf_reg: null
+  # # random_strength: 3.2444768152263492
+  # # rsm: null
+
+  depth: 8
+  n_estimators: 10000
+  learning_rate: 0.035698089610199456
+  early_stopping_rounds: 500
+  bagging_temperature: 0.38484459500477264
 
 catboost_8:
-  depth: 5
-  n_estimators: 10000
-  learning_rate: 0.08358915692192251
-  early_stopping_rounds: 500
-  bagging_temperature: 0.30685560983589716
+  # depth: 5
+  # n_estimators: 10000
+  # learning_rate: 0.08358915692192251
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.30685560983589716
   # l2_leaf_reg: null
   # random_strength: null
   # rsm: null
 
-catboost_9:
-  depth: 5
+  # depth: 6
+  # n_estimators: 10000
+  # learning_rate: 0.1301389955958536
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.6692542879117128
+  # # l2_leaf_reg: null
+  # # random_strength: 4.668024851595844
+  # # rsm: null
+
+  depth: 6
   n_estimators: 10000
-  learning_rate: 0.03111998205299424
+  learning_rate: 0.02952201347690779
   early_stopping_rounds: 500
-  bagging_temperature: 0.5247564316322378
+  bagging_temperature: 0.7949902039602883
+
+catboost_9:
+  # depth: 5
+  # n_estimators: 10000
+  # learning_rate: 0.03111998205299424
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.5247564316322378
+  # # l2_leaf_reg: null
+  # # random_strength: null
+  # # rsm: null
+
+  # depth: 7
+  # n_estimators: 10000
+  # learning_rate: 0.006048190982583073
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.1472988683354315
+  # # l2_leaf_reg: null
+  # # random_strength: 5.795660494660646
+  # # rsm: null
+
+  # depth: 5
+  # n_estimators: 10000
+  # learning_rate: 0.03788555548790895
+  # early_stopping_rounds: 500
+  # bagging_temperature: 0.49604131216971414
   # l2_leaf_reg: null
   # random_strength: null
   # rsm: null
+
+  depth: 7
+  n_estimators: 10000
+  learning_rate: 0.03398678500698109
+  early_stopping_rounds: 500
+  bagging_temperature: 0.31791884939660275
