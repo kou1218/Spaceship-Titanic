@@ -536,6 +536,15 @@ class V2(TabularDataFrame):
         df_concat['Food_Shop'] = df_concat['ShoppingMall'] + df_concat['FoodCourt']
         self.continuous_columns.extend(['Food_Shop'])
 
+        # df_concat['skew'] = df_concat[['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']].skew(1)
+        # self.continuous_columns.extend(['skew'])
+
+        # df_concat['var'] = df_concat[['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']].var(1)
+        # self.continuous_columns.extend(['var'])
+
+        # df_concat['prod'] = df_concat[['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']].prod(1)
+        # self.continuous_columns.extend(['prod'])
+
         # bins = [0, 6000, 12000, 18000, 24000, 30000, df_concat['TotalSpent'].max()+1]
         # labels = ['0-6000','6000-12000', '12000-18000', '18000-24000', '24000-30000', '30000+']
         # df_concat['TotalSpent_bin'] = pd.cut(df_concat['TotalSpent'], bins=bins, labels=labels, right=False)
@@ -543,7 +552,7 @@ class V2(TabularDataFrame):
         # df_concat.drop('TotalSpent', axis=1, inplace=True)
         # self.continuous_columns = [col for col in self.continuous_columns if col !='TotalSpent']
 
-        # # vscode上で精度ギャン下がり
+        # vscode上で精度ギャン下がり
         # df_concat.drop('RoomService', axis=1, inplace=True)
         # self.continuous_columns = [col for col in self.continuous_columns if col !='RoomService']
         # df_concat.drop('FoodCourt', axis=1, inplace=True)
@@ -631,19 +640,20 @@ class V2(TabularDataFrame):
         df_concat.drop('Age', axis=1, inplace=True)
         self.continuous_columns = [col for col in self.continuous_columns if col !='Age']
 
-        # bins = [0, 320, 640, 800, 1180, 1500, 1820, 2000 ,df_concat['Cabin_num'].max()+1]
-        # labels = ['0-320', '320-640', '640-800', '800-1180', '1180-1500', '1500-1820', '1800-2000', '2000+']
-        # df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
-        # self.categorical_columns.extend(['Cabin_num_bin'])
-        # df_concat.drop('Cabin_num', axis=1, inplace=True)
-        # self.continuous_columns = [col for col in self.continuous_columns if col !='Cabin_num']
-
-        bins = [0, 300, 600, 900, 1200, 1500, 1800, 2100, df_concat['Cabin_num'].max()+1]
-        labels = ['0-300', '300-600', '600-900', '900-1200', '1200-1500', '1500-1800', '1800-2100', '2100+']
+        #ヒカルめっちゃ期待
+        bins = [0, 320, 640, 800, 1180, 1500, 1820, 2000 ,df_concat['Cabin_num'].max()+1]
+        labels = ['0-320', '320-640', '640-800', '800-1180', '1180-1500', '1500-1820', '1800-2000', '2000+']
         df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
         self.categorical_columns.extend(['Cabin_num_bin'])
         df_concat.drop('Cabin_num', axis=1, inplace=True)
         self.continuous_columns = [col for col in self.continuous_columns if col !='Cabin_num']
+
+        # bins = [0, 300, 600, 900, 1200, 1500, 1800, 2100, df_concat['Cabin_num'].max()+1]
+        # labels = ['0-300', '300-600', '600-900', '900-1200', '1200-1500', '1500-1800', '1800-2100', '2100+']
+        # df_concat['Cabin_num_bin'] = pd.cut(df_concat['Cabin_num'], bins=bins, labels=labels, right=False)
+        # self.categorical_columns.extend(['Cabin_num_bin'])
+        # df_concat.drop('Cabin_num', axis=1, inplace=True)
+        # self.continuous_columns = [col for col in self.continuous_columns if col !='Cabin_num']
 
         # # add特徴量
         # df_concat['Destination_TotalSpent'] = df_concat['Destination'] * df_concat['TotalSpent']
